@@ -1,1 +1,8 @@
-JavaFXTemplate.class
+Component/MenuButton.class
+Utils/Util.class
+View/WelcomeStage.class
+Component/MenuButton$ButtonType.class
+Main.class
+View/GameStage.class
+Utils/ButtonStyles.class
+Utils/ThemeStyles.class
