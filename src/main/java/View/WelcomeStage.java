@@ -1,6 +1,7 @@
 package View;
 
 import Component.MenuButton;
+import Utils.GameMode;
 import Utils.ThemeStyles;
 import Utils.Util;
 import javafx.geometry.Insets;
@@ -60,14 +61,14 @@ public class WelcomeStage {
         gameIconView2.setScaleX(-1);
 
         HBox titleBox = new HBox();
-        titleBox.getChildren().addAll(gameIconView,gameTitle,gameIconView2);
+        titleBox.getChildren().addAll(gameIconView, gameTitle, gameIconView2);
         titleBox.setAlignment(Pos.CENTER);
         titleBox.setSpacing(10);
 
         Button startGameButton = createStartGameButton();
         Button exitGameButton = createExitGameButton();
 
-        vbox.getChildren().addAll(titleBox,startGameButton,exitGameButton);
+        vbox.getChildren().addAll(titleBox, startGameButton, exitGameButton);
         vbox.setAlignment(Pos.CENTER);
         vbox.setSpacing(20);
         return vbox;
@@ -93,11 +94,12 @@ public class WelcomeStage {
 
     private MenuBar createMenuBar() {
         MenuBar menuBar = new MenuBar();
-        Menu gameMenu = new Menu("Game");
+        Menu gameMenu = new Menu("Help");
 
         MenuItem gameRules = new MenuItem("Game Rules");
-
+        gameRules.setOnAction(e -> InfoWindow.showRules());
         MenuItem prizeTable = new MenuItem("Prize Table");
+        prizeTable.setOnAction(e -> InfoWindow.showOdds(GameMode.TEN_SPOT));
 
         MenuItem exitGame = Util.createMenuItem("Exit Game", () -> stage.close());
         gameMenu.getItems().addAll(gameRules, prizeTable, exitGame);
@@ -106,12 +108,11 @@ public class WelcomeStage {
     }
 
 
-
     public void show() {
         stage.show();
     }
 
-    public void hide(){
+    public void hide() {
         stage.hide();
     }
 

@@ -6,6 +6,21 @@ package Utils;
  */
 public class ThemeStyles {
 
+    // ============ Color Constants ============
+    public static final String CASINO_GREEN_DARK = "#0B6623";
+    public static final String CASINO_GREEN = "#0E7A2E";
+    public static final String CASINO_GREEN_LIGHT = "#118D3A";
+
+    public static final String GOLD_DARK = "#B8860B";
+    public static final String GOLD = "#DAA520";
+    public static final String GOLD_LIGHT = "#FFD700";
+
+    public static final String VELVET_RED = "#8B0000";
+    public static final String VELVET_RED_LIGHT = "#A52A2A";
+
+    public static final String DARK_BG = "#1A1A1A";
+    public static final String DARK_BG_LIGHT = "#2C2C2C";
+
     // ============ Background Styles ============
 
     /**
@@ -146,7 +161,7 @@ public class ThemeStyles {
      * Info panel style - for displaying rules, odds, etc.
      */
     public static final String INFO_PANEL =
-            "-fx-background-color: rgba(44, 44, 44, 0.95); " +
+            "-fx-background-color: #212226; " +
                     "-fx-background-radius: 12; " +
                     "-fx-border-color: #DAA520; " +
                     "-fx-border-width: 2; " +
