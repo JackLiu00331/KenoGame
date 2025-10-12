@@ -27,47 +27,51 @@ public class ThemeStyles {
      * Welcome to Stage background - dark casino style with radial gradient
      * Brighter in the center, darker around, creating a spotlight effect
      */
-    public static final String WELCOME_BACKGROUND =
+    public static final String WELCOME_BACKGROUND = String.format(
             "-fx-background-color: " +
-                    "radial-gradient(focus-angle 0deg, focus-distance 0%, " +
-                    "center 50% 50%, radius 70%, " +
-                    "#0E7A2E 0%, #1A1A1A 100%);";
+                    "radial-gradient(focus-angle 0deg, focus-distance 0%%, " +
+                    "center 50%% 50%%, radius 70%%, " +
+                    "%s 0%%, %s 100%%);",
+            CASINO_GREEN, DARK_BG);
 
     /**
      * Game Stage background - classic casino green gradient
      * From dark green to lighter green, simulating a table feel
      * Subtle gradient, does not affect gameplay
      */
-    public static final String GAME_BACKGROUND =
+    public static final String GAME_BACKGROUND = String.format(
             "-fx-background-color: " +
                     "linear-gradient(to bottom, " +
-                    "#0B6623 0%, " +
-                    "#0E7A2E 50%, " +
-                    "#0B6623 100%);";
+                    "%s 0%%, " +
+                    "%s 50%%, " +
+                    "%s 100%%);",
+            CASINO_GREEN_DARK, CASINO_GREEN, CASINO_GREEN_DARK);
 
     /**
      * Alternative: softer casino background (dark gray-green tone)
      * Use this if pure green is too bright
      */
-    public static final String GAME_BACKGROUND_SUBTLE =
+    public static final String GAME_BACKGROUND_SUBTLE = String.format(
             "-fx-background-color: " +
                     "linear-gradient(to bottom, " +
-                    "#1C3A29 0%, " +
-                    "#234D35 50%, " +
-                    "#1C3A29 100%);";
+                    "%s 0%%, " +
+                    "%s 50%%, " +
+                    "%s 100%%);",
+            "#1C3A29", "#234D35", "#1C3A29"); // These colors are not defined as constants
 
     /**
      * Luxury background - velvet texture (dark red-black gradient)
      * Suitable for high-end casino style
      */
-    public static final String LUXURY_BACKGROUND =
+    public static final String LUXURY_BACKGROUND = String.format(
             "-fx-background-color: " +
                     "linear-gradient(to bottom right, " +
-                    "#1A0505 0%, " +
-                    "#3D0A0A 30%, " +
-                    "#8B0000 50%, " +
-                    "#3D0A0A 70%, " +
-                    "#1A0505 100%);";
+                    "%s 0%%, " +
+                    "%s 30%%, " +
+                    "%s 50%%, " +
+                    "%s 70%%, " +
+                    "%s 100%%);",
+            "#1A0505", "#3D0A0A", VELVET_RED, "#3D0A0A", "#1A0505"); // Only VELVET_RED is a constant
 
     /**
      * Card/Panel background - semi-transparent dark with slight gloss

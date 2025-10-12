@@ -1,4 +1,4 @@
-package Utils;
+package Model;
 
 public enum GameMode {
     ONE_SPOT(1, "1 Spot Game"),

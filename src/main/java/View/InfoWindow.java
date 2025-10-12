@@ -1,7 +1,7 @@
 package View;
 
-import Utils.GameMode;
-import Utils.PrizeTable;
+import Model.GameMode;
+import Model.PrizeTable;
 import Utils.ThemeStyles;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -27,7 +27,7 @@ public class InfoWindow {
         Stage window = new Stage();
         window.setTitle(title);
         window.setWidth(width);
-        window.setMaxHeight(height);
+        window.setHeight(height);
 
         window.initModality(Modality.APPLICATION_MODAL);
         window.setResizable(false);

@@ -1,7 +1,8 @@
 package View;
 
 import Component.MenuButton;
-import Utils.GameMode;
+import Model.GameMode;
+import Utils.ButtonStyles;
 import Utils.ThemeStyles;
 import Utils.Util;
 import javafx.geometry.Insets;
@@ -75,14 +76,14 @@ public class WelcomeStage {
     }
 
     private Button createExitGameButton() {
-        MenuButton exitGameButton = new MenuButton("Exit", MenuButton.ButtonType.DANGER);
+        MenuButton exitGameButton = new MenuButton("Exit", ButtonStyles.ButtonType.DANGER);
         exitGameButton.setMaxWidth(150);
         exitGameButton.setOnAction(e -> stage.close());
         return exitGameButton;
     }
 
     private Button createStartGameButton() {
-        MenuButton startGameButton = new MenuButton("Start", MenuButton.ButtonType.SUCCESS);
+        MenuButton startGameButton = new MenuButton("Start", ButtonStyles.ButtonType.SUCCESS);
         startGameButton.setMaxWidth(150);
         startGameButton.setOnAction(e -> {
             gameStage = new GameStage();
