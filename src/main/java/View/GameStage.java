@@ -1,16 +1,18 @@
 package View;
 
 import Component.ControlButton;
+import javafx.util.Duration;
+import org.controlsfx.control.PopOver;
 import Component.NumberButton;
 import Controller.GameController;
 import Model.GameMode;
+import Model.PrizeItem;
 import Utils.ButtonStyles;
 import Utils.ThemeStyles;
 import Utils.Util;
 import javafx.animation.PauseTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -20,35 +22,42 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameStage {
 
-    GameController gameController;
-    NumberButton[] numberButtons = new NumberButton[80];
+    private GameController gameController;
+    private NumberButton[] numberButtons = new NumberButton[80];
     private boolean allDisabled = false;
+    private List<PrizeItem> prizeItems;
 
     private WelcomeStage welcomeStage;
     private Stage stage;
-    VBox root;
-    Label balanceLabel;
-    MenuButton modeSelector;
-    Label statusLabel;
-    ImageView slotIconView;
-    ImageView slotIconView2;
-    ControlButton playButton;
-    ControlButton randomButton;
-    ControlButton clearButton;
-    ControlButton autoPlayButton;
-    ControlButton betButton;
-    PauseTransition slowPause = new PauseTransition(javafx.util.Duration.seconds(0.4));
+    private VBox root;
+    private VBox prizeMatchPanel;
+    private Label balanceLabel;
+    private MenuButton modeSelector;
+    private Label statusLabel;
+    private ImageView slotIconView;
+    private ImageView slotIconView2;
+    private ControlButton playButton;
+    private ControlButton randomButton;
+    private ControlButton clearButton;
+    private ControlButton autoPlayButton;
+    private ControlButton betButton;
+    private PauseTransition slowPause = new PauseTransition(Duration.seconds(0.4));
+    private PopOver popOver;
 
     public GameStage(WelcomeStage welcomeStage) {
+        prizeItems = new ArrayList<>();
         this.welcomeStage = welcomeStage;
         gameController = new GameController();
         initializeStage();
-        slowPause.play();
         slowPause.setOnFinished(e -> {
             InfoWindow.showRules(true);
         });
+        slowPause.play();
     }
 
     private void initializeStage() {
@@ -68,6 +77,23 @@ public class GameStage {
             e.consume();
             handleBack();
         });
+
+        PauseTransition delay = new PauseTransition(Duration.seconds(1));
+        delay.setOnFinished(e -> showModeSelectorPopOver());
+        delay.play();
+    }
+
+    private void showModeSelectorPopOver() {
+        if (popOver != null && popOver.isShowing()) {
+            popOver.hide();
+        }
+        Label tip = new Label("Select game mode here !!!");
+        tip.setStyle("-fx-padding: 10; -fx-font-size: 16px;");
+        popOver = new PopOver(tip);
+        popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+        popOver.setDetachable(false);
+        popOver.setAutoHide(false);
+        popOver.show(modeSelector);
     }
 
     private VBox createLayout() {
@@ -142,6 +168,11 @@ public class GameStage {
         modeSelector.setStyle(ButtonStyles.MENU_BUTTON_MODE);
         modeSelector.getItems().addAll(oneSpot, fourSpot, eightSpot, tenSpot);
         modeSelector.setPrefWidth(244);
+        modeSelector.setOnMouseClicked(e -> {
+            if (popOver != null && popOver.isShowing()) {
+                popOver.hide();
+            }
+        });
 
         Image slotIcon = new Image(getClass().getResourceAsStream("/icons/slot.gif"));
 
@@ -169,10 +200,21 @@ public class GameStage {
     private HBox createGameArea() {
         HBox gameArea = new HBox();
         gameArea.setAlignment(Pos.CENTER);
+        gameArea.setSpacing(20);
         gameArea.setPadding(new Insets(20));
         GridPane numberGrid = createNumGrid();
-        gameArea.getChildren().addAll(numberGrid);
+        prizeMatchPanel = createPrizeMatchPanel();
+        gameArea.getChildren().addAll(numberGrid, prizeMatchPanel);
         return gameArea;
+    }
+
+    private VBox createPrizeMatchPanel() {
+        VBox prizePanel = new VBox();
+        prizePanel.setSpacing(5);
+        prizePanel.setPadding(new Insets(10));
+        prizePanel.setStyle("-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 10;");
+        prizePanel.setPrefWidth(250);
+        return prizePanel;
     }
 
     private GridPane createNumGrid() {

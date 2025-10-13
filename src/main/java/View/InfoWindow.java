@@ -59,6 +59,7 @@ public class InfoWindow {
 
         Scene scene = new Scene(mainLayout);
         window.setScene(scene);
+        window.setAlwaysOnTop(true);
         window.show();
     }
 

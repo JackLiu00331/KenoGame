@@ -36,6 +36,7 @@ public class WelcomeStage {
         stage.setHeight(600);
         stage.setWidth(600);
         stage.setResizable(false);
+        stage.setAlwaysOnTop(true);
     }
 
     private BorderPane createBorderPane() {
