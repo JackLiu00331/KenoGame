@@ -1,10 +1,10 @@
 package Model;
 
 public enum GameMode {
-    ONE_SPOT(1, "1 Spot Game"),
-    FOUR_SPOT(4, "4 Spot Game"),
-    EIGHT_SPOT(8, "8 Spot Game"),
-    TEN_SPOT(10, "10 Spot Game");
+    ONE_SPOT(1, "1 Spot"),
+    FOUR_SPOT(4, "4 Spot"),
+    EIGHT_SPOT(8, "8 Spot"),
+    TEN_SPOT(10, "10 Spot");
 
     private final int maxSpots;
     private final String displayName;

@@ -200,4 +200,19 @@ public class ButtonStyles {
                 bg, border, scale
         );
     }
+
+    public static final String MENU_BUTTON_MODE =
+            "-fx-background-color: linear-gradient(to right, #F39C12 0%, #F1C40F 50%, #F39C12 100%); " +
+                    "-fx-text-fill: #2C3E50; " +
+                    "-fx-font-size: 16px; " +
+                    "-fx-font-weight: bold; " +
+                    "-fx-font-family: 'Courier New', monospace; " +
+                    "-fx-padding: 8 12 8 12; " +
+                    "-fx-background-radius: 20; " +
+                    "-fx-border-color: rgba(0, 0, 0, 0.3); " +
+                    "-fx-border-width: 2; " +
+                    "-fx-border-radius: 20; " +
+                    "-fx-effect: dropshadow(gaussian, rgba(243, 156, 18, 0.6), 12, 0, 0, 3), " +
+                    "           innershadow(gaussian, rgba(255, 255, 255, 0.3), 3, 0, 0, 1);" +
+                    " -fx-cursor: hand; ";
 }

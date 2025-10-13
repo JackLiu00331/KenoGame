@@ -122,10 +122,17 @@ public class ThemeStyles {
      * Status text - in-game prompt text
      */
     public static final String STATUS_TEXT =
-            "-fx-font-size: 16px; " +
+            "-fx-background-color: linear-gradient(to right, #34495E 0%, #2C3E50 50%, #34495E 100%); " +
+                    "-fx-text-fill: white; " +
+                    "-fx-font-size: 16px; " +
                     "-fx-font-weight: bold; " +
-                    "-fx-text-fill: #FFFFFF; " +
-                    "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 5, 0, 0, 1);";
+                    "-fx-padding: 10 20 10 20; " +
+                    "-fx-background-radius: 18; " +
+                    "-fx-border-color: rgba(255, 255, 255, 0.2); " +
+                    "-fx-border-width: 2; " +
+                    "-fx-border-radius: 18; " +
+                    "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 10, 0, 0, 3), " +
+                    "           innershadow(gaussian, rgba(255, 255, 255, 0.15), 3, 0, 0, 1);";
 
     /**
      * Money display - balance/prize, etc.
@@ -181,4 +188,101 @@ public class ThemeStyles {
                     "-fx-background-radius: 15; " +
                     "-fx-padding: 25; " +
                     "-fx-effect: innershadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 3);";
+
+    // ============ 信息标签样式（余额、模式等）============
+
+    /**
+     * 游戏模式标签样式 - 红色/橙色渐变背景
+     * 类似图片中的 "KENO" 标签
+     */
+    public static final String INFO_LABEL_MODE =
+            "-fx-background-color: linear-gradient(to right, #C0392B 0%, #E74C3C 50%, #C0392B 100%); " +
+                    "-fx-text-color: #ffffff" +
+                    "-fx-text-fill: white; " +
+                    "-fx-font-size: 16px; " +
+                    "-fx-font-weight: bold; " +
+                    "-fx-padding: 12 25 12 25; " +
+                    "-fx-background-radius: 20; " +
+                    "-fx-border-color: rgba(0, 0, 0, 0.3); " +
+                    "-fx-border-width: 2; " +
+                    "-fx-border-radius: 20; " +
+                    "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 10, 0, 0, 3), " +
+                    "           innershadow(gaussian, rgba(255, 255, 255, 0.2), 3, 0, 0, 1);";
+
+    /**
+     * 余额标签样式 - 金色/黄色渐变背景
+     * 类似图片中的 "+75.00 USD" 标签
+     */
+    public static final String INFO_LABEL_BALANCE =
+            "-fx-background-color: linear-gradient(to right, #F39C12 0%, #F1C40F 50%, #F39C12 100%); " +
+                    "-fx-text-fill: #2C3E50; " +
+                    "-fx-font-size: 18px; " +
+                    "-fx-font-weight: bold; " +
+                    "-fx-font-family: 'Courier New', monospace; " +
+                    "-fx-padding: 12 25 12 25; " +
+                    "-fx-background-radius: 20; " +
+                    "-fx-border-color: rgba(0, 0, 0, 0.3); " +
+                    "-fx-border-width: 2; " +
+                    "-fx-border-radius: 20; " +
+                    "-fx-effect: dropshadow(gaussian, rgba(243, 156, 18, 0.6), 12, 0, 0, 3), " +
+                    "           innershadow(gaussian, rgba(255, 255, 255, 0.3), 3, 0, 0, 1);";
+
+    /**
+     * 状态标签样式 - 绿色背景（用于积极信息）
+     */
+    public static final String INFO_LABEL_STATUS_POSITIVE =
+            "-fx-background-color: linear-gradient(to right, #27AE60 0%, #2ECC71 50%, #27AE60 100%); " +
+                    "-fx-text-fill: white; " +
+                    "-fx-font-size: 15px; " +
+                    "-fx-font-weight: bold; " +
+                    "-fx-padding: 10 20 10 20; " +
+                    "-fx-background-radius: 18; " +
+                    "-fx-border-color: rgba(0, 0, 0, 0.3); " +
+                    "-fx-border-width: 2; " +
+                    "-fx-border-radius: 18; " +
+                    "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 8, 0, 0, 2), " +
+                    "           innershadow(gaussian, rgba(255, 255, 255, 0.2), 3, 0, 0, 1);";
+
+    /**
+     * 中性标签样式 - 蓝色背景（用于一般信息）
+     */
+    public static final String INFO_LABEL_NEUTRAL =
+            "-fx-background-color: linear-gradient(to right, #2980B9 0%, #3498DB 50%, #2980B9 100%); " +
+                    "-fx-text-fill: white; " +
+                    "-fx-font-size: 15px; " +
+                    "-fx-font-weight: bold; " +
+                    "-fx-padding: 10 20 10 20; " +
+                    "-fx-background-radius: 18; " +
+                    "-fx-border-color: rgba(0, 0, 0, 0.3); " +
+                    "-fx-border-width: 2; " +
+                    "-fx-border-radius: 18; " +
+                    "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 8, 0, 0, 2), " +
+                    "           innershadow(gaussian, rgba(255, 255, 255, 0.2), 3, 0, 0, 1);";
+
+    /**
+     * 投注金额标签样式 - 紫色渐变
+     */
+    public static final String INFO_LABEL_BET =
+            "-fx-background-color: linear-gradient(to right, #8E44AD 0%, #9B59B6 50%, #8E44AD 100%); " +
+                    "-fx-text-fill: white; " +
+                    "-fx-font-size: 16px; " +
+                    "-fx-font-weight: bold; " +
+                    "-fx-font-family: 'Courier New', monospace; " +
+                    "-fx-padding: 10 20 10 20; " +
+                    "-fx-background-radius: 18; " +
+                    "-fx-border-color: rgba(0, 0, 0, 0.3); " +
+                    "-fx-border-width: 2; " +
+                    "-fx-border-radius: 18; " +
+                    "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 8, 0, 0, 2), " +
+                    "           innershadow(gaussian, rgba(255, 255, 255, 0.2), 3, 0, 0, 1);";
+
+    /**
+     * 信息区域容器样式
+     */
+    public static final String INFO_AREA_CONTAINER =
+            "-fx-background-color: rgba(0, 0, 0, 0.3); " +
+                    "-fx-background-radius: 15; " +
+                    "-fx-padding: 15; " +
+                    "-fx-spacing: 15; " +
+                    "-fx-effect: innershadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 2);";
 }

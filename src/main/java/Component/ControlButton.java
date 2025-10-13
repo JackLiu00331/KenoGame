@@ -4,12 +4,12 @@ import Utils.ButtonStyles;
 import lombok.Getter;
 
 @Getter
-public class MenuButton extends StyledButton {
+public class ControlButton extends StyledButton {
 
     private final ButtonStyles.ButtonType buttonType;
     private final String actionType;
 
-    public MenuButton(String text, ButtonStyles.ButtonType buttonType) {
+    public ControlButton(String text, ButtonStyles.ButtonType buttonType) {
         super(text);
         this.buttonType = buttonType;
         this.actionType = text;

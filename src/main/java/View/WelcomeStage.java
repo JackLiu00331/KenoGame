@@ -1,6 +1,6 @@
 package View;
 
-import Component.MenuButton;
+import Component.ControlButton;
 import Model.GameMode;
 import Utils.ButtonStyles;
 import Utils.ThemeStyles;
@@ -76,17 +76,17 @@ public class WelcomeStage {
     }
 
     private Button createExitGameButton() {
-        MenuButton exitGameButton = new MenuButton("Exit", ButtonStyles.ButtonType.DANGER);
+        ControlButton exitGameButton = new ControlButton("Exit", ButtonStyles.ButtonType.DANGER);
         exitGameButton.setMaxWidth(150);
         exitGameButton.setOnAction(e -> stage.close());
         return exitGameButton;
     }
 
     private Button createStartGameButton() {
-        MenuButton startGameButton = new MenuButton("Start", ButtonStyles.ButtonType.SUCCESS);
+        ControlButton startGameButton = new ControlButton("Start", ButtonStyles.ButtonType.SUCCESS);
         startGameButton.setMaxWidth(150);
         startGameButton.setOnAction(e -> {
-            gameStage = new GameStage();
+            gameStage = new GameStage(this);
             gameStage.show();
             stage.close();
         });
@@ -97,10 +97,8 @@ public class WelcomeStage {
         MenuBar menuBar = new MenuBar();
         Menu gameMenu = new Menu("Help");
 
-        MenuItem gameRules = new MenuItem("Game Rules");
-        gameRules.setOnAction(e -> InfoWindow.showRules());
-        MenuItem prizeTable = new MenuItem("Prize Table");
-        prizeTable.setOnAction(e -> InfoWindow.showOdds(GameMode.TEN_SPOT));
+        MenuItem gameRules = Util.createMenuItem("Game Rules", InfoWindow::showRules);
+        MenuItem prizeTable = Util.createMenuItem("Prize Table", () -> InfoWindow.showOdds(GameMode.TEN_SPOT));
 
         MenuItem exitGame = Util.createMenuItem("Exit Game", () -> stage.close());
         gameMenu.getItems().addAll(gameRules, prizeTable, exitGame);

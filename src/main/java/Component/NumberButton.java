@@ -4,7 +4,6 @@ import Utils.ButtonStyles;
 import javafx.scene.control.Button;
 import lombok.Getter;
 
-@Getter
 public class NumberButton extends Button implements SelectableButton {
     public enum ButtonState {
         UNSELECTED, USER_SELECTED, SYSTEM_SELECTED, BOTH_SELECTED
@@ -41,6 +40,7 @@ public class NumberButton extends Button implements SelectableButton {
             }
         });
     }
+
 
     @Override
     public boolean isSelected() {
@@ -113,5 +113,19 @@ public class NumberButton extends Button implements SelectableButton {
 
     public boolean isWinning() {
         return currentState == ButtonState.BOTH_SELECTED;
+    }
+
+    public void disableButton() {
+        this.setDisable(true);
+        this.setStyle(ButtonStyles.getNumberButtonStyle(ButtonStyles.NumberButtonState.UNSELECTED, false) + "-fx-opacity: 0.6;");
+    }
+
+    public void enableButton() {
+        this.setDisable(false);
+        updateState();
+    }
+
+    public int getNumber() {
+        return number;
     }
 }
