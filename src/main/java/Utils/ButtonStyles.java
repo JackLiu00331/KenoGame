@@ -81,6 +81,69 @@ public class ButtonStyles {
         );
     }
 
+    public static String getControlButtonStyle(ButtonType type, String state) {
+        if (type == null) {
+            type = ButtonType.PRIMARY; // 默认值
+        }
+        String baseColor, hoverColor, pressedColor, fontSize = "16px";
+
+        switch (type) {
+            case SUCCESS:
+                baseColor = "#2ECC71";
+                hoverColor = "#27AE60";
+                pressedColor = "#1E8449";
+                fontSize = "32px";
+                break;
+            case DANGER:
+                baseColor = "#E74C3C";
+                hoverColor = "#C0392B";
+                pressedColor = "#A93226";
+                break;
+            case NEUTRAL:
+                baseColor = "#95A5A6";
+                hoverColor = "#7F8C8D";
+                pressedColor = "#707B7C";
+                break;
+            default:
+                baseColor = "#3498DB";
+                hoverColor = "#2980B9";
+                pressedColor = "#21618C";
+        }
+
+        String color;
+        String scale = "";
+        String shadow = "dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2)";
+
+        switch (state.toLowerCase()) {
+            case "hover":
+                color = hoverColor;
+                scale = "-fx-scale-x: 1.02; -fx-scale-y: 1.02;";
+                shadow = "dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 3)";
+                break;
+            case "pressed":
+                color = pressedColor;
+                scale = "-fx-scale-x: 0.98; -fx-scale-y: 0.98;";
+                shadow = "dropshadow(gaussian, rgba(0,0,0,0.15), 5, 0, 0, 1)";
+                break;
+            default: // normal
+                color = baseColor;
+        }
+
+        return String.format(
+                "-fx-background-color: %s; " +
+                        "-fx-text-fill: white; " +
+                        "-fx-font-size: %s; " +
+                        "-fx-font-weight: bold; " +
+                        "-fx-background-radius: 8; " +
+                        "-fx-border-radius: 8; " +
+                        "-fx-padding: 12 30 12 30; " +
+                        "-fx-cursor: hand; " +
+                        "-fx-effect: %s; " +
+                        "%s",
+                color, fontSize, shadow, scale
+        );
+    }
+
     // ============ Number Button Styles (Specific to NumberButton) ============
 
     /**

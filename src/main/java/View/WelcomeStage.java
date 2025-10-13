@@ -76,14 +76,14 @@ public class WelcomeStage {
     }
 
     private Button createExitGameButton() {
-        ControlButton exitGameButton = new ControlButton("Exit", ButtonStyles.ButtonType.DANGER);
+        ControlButton exitGameButton = new ControlButton("Exit", ButtonStyles.ButtonType.DANGER, "MENU");
         exitGameButton.setMaxWidth(150);
         exitGameButton.setOnAction(e -> stage.close());
         return exitGameButton;
     }
 
     private Button createStartGameButton() {
-        ControlButton startGameButton = new ControlButton("Start", ButtonStyles.ButtonType.SUCCESS);
+        ControlButton startGameButton = new ControlButton("Start", ButtonStyles.ButtonType.SUCCESS, "MENU");
         startGameButton.setMaxWidth(150);
         startGameButton.setOnAction(e -> {
             gameStage = new GameStage(this);

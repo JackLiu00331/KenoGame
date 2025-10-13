@@ -7,13 +7,9 @@ public abstract class StyledButton extends Button implements StatefulButton {
     protected String hoverStyle;
     protected String pressedStyle;
 
-    private boolean isInitialized = false;
-
     public StyledButton(String text) {
         super(text);
-        initializeStyles();
         setupMouseEvents();
-        applyCurrentStyles();
     }
 
     protected abstract void initializeStyles();

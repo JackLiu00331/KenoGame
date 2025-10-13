@@ -10,6 +10,7 @@ import Utils.Util;
 import javafx.animation.PauseTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -35,6 +36,9 @@ public class GameStage {
     ImageView slotIconView2;
     ControlButton playButton;
     ControlButton randomButton;
+    ControlButton clearButton;
+    ControlButton autoPlayButton;
+    ControlButton betButton;
     PauseTransition slowPause = new PauseTransition(javafx.util.Duration.seconds(0.4));
 
     public GameStage(WelcomeStage welcomeStage) {
@@ -80,12 +84,41 @@ public class GameStage {
 
     private HBox createControlArea() {
         HBox controlArea = new HBox();
-        controlArea.setSpacing(10);
-        playButton = new ControlButton("Play", ButtonStyles.ButtonType.PRIMARY);
-        randomButton = new ControlButton("Random", ButtonStyles.ButtonType.NEUTRAL);
-        controlArea.getChildren().addAll(randomButton, playButton);
+        controlArea.setSpacing(20);
+        VBox toolButtons = new VBox();
+        VBox featureButtons = new VBox();
+        toolButtons.setSpacing(10);
+        randomButton = new ControlButton("Random", ButtonStyles.ButtonType.NEUTRAL, "CONTROL");
+        clearButton = new ControlButton("Clear", ButtonStyles.ButtonType.DANGER, "CONTROL");
+        randomButton.setPrefWidth(150);
+        randomButton.setOnAction(e -> handleRandomSelection());
+        clearButton.setPrefWidth(150);
+        clearButton.setOnAction(e -> handleClearSelection());
+        toolButtons.getChildren().addAll(randomButton, clearButton);
+
+        playButton = new ControlButton("Play", ButtonStyles.ButtonType.SUCCESS, "CONTROL");
+        playButton.setPrefWidth(500);
+        playButton.setPrefHeight(98);
+        playButton.setStyle(playButton.getStyle() + "-fx-font-size: 32px;");
+        Image startIcon = new Image(getClass().getResourceAsStream("/icons/start.gif"));
+        ImageView startIconView = new ImageView(startIcon);
+        playButton.setGraphic(startIconView);
+        playButton.setContentDisplay(ContentDisplay.LEFT);
+
+
+        featureButtons.setSpacing(10);
+        autoPlayButton = new ControlButton("Auto Play", ButtonStyles.ButtonType.PRIMARY, "CONTROL");
+        betButton = new ControlButton("Bet", ButtonStyles.ButtonType.PRIMARY, "CONTROL");
+        autoPlayButton.setPrefWidth(150);
+        betButton.setPrefWidth(150);
+        featureButtons.getChildren().addAll(autoPlayButton, betButton);
+        controlArea.getChildren().addAll(toolButtons, playButton, featureButtons);
+        controlArea.setAlignment(Pos.CENTER);
+        controlArea.setPadding(new Insets(0, 50, 0, 50));
+        controlArea.setPrefWidth(800);
         return controlArea;
     }
+
 
     private HBox createInfoArea() {
         HBox infoArea = new HBox();
@@ -128,10 +161,9 @@ public class GameStage {
         if (allDisabled && gameController.getGameMode() != null) {
             enableAllButtons();
         }
-        for (NumberButton btn : numberButtons) {
-            btn.reset();
-        }
+        resetNumberButtons();
         InfoWindow.showOdds(gameMode, true);
+        playButton.setDisable(true);
     }
 
     private HBox createGameArea() {
@@ -194,6 +226,13 @@ public class GameStage {
         }
     }
 
+    private void handleClearSelection() {
+        resetNumberButtons();
+        gameController.getSelectedNumbers().clear();
+        statusLabel.setText("Selections cleared.");
+        playButton.setDisable(true);
+    }
+
     private MenuBar createMenu() {
         MenuBar menuBar = new MenuBar();
         Menu settings = new Menu("Settings");
@@ -234,12 +273,31 @@ public class GameStage {
         }
     }
 
+    private void handleRandomSelection() {
+        resetNumberButtons();
+        gameController.randomSelectNumbersForUser();
+        for (int num : gameController.getSelectedNumbers()) {
+            numberButtons[num - 1].select();
+        }
+        playButton.setDisable(false);
+        statusLabel.setText("Randomly selected " + gameController.getSelectedCount() + " number(s).");
+    }
+
+    private void resetNumberButtons() {
+        for (NumberButton btn : numberButtons) {
+            btn.reset();
+        }
+    }
+
     private void disableAllButtons() {
         for (NumberButton btn : numberButtons) {
             btn.disableButton();
         }
         playButton.setDisable(true);
         randomButton.setDisable(true);
+        clearButton.setDisable(true);
+        autoPlayButton.setDisable(true);
+        betButton.setDisable(true);
         allDisabled = true;
     }
 
@@ -249,6 +307,9 @@ public class GameStage {
         }
         playButton.setDisable(false);
         randomButton.setDisable(false);
+        clearButton.setDisable(false);
+        autoPlayButton.setDisable(false);
+        betButton.setDisable(false);
         allDisabled = false;
     }
 }

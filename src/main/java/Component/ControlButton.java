@@ -6,13 +6,19 @@ import lombok.Getter;
 @Getter
 public class ControlButton extends StyledButton {
 
-    private final ButtonStyles.ButtonType buttonType;
+    private final ButtonStyles.ButtonType styleType;
     private final String actionType;
+    private String buttonType; // Default to MENU, can be CONTROL
 
-    public ControlButton(String text, ButtonStyles.ButtonType buttonType) {
+    public ControlButton(String text, ButtonStyles.ButtonType styleType, String buttonType) {
         super(text);
-        this.buttonType = buttonType;
+        this.styleType = styleType;
         this.actionType = text;
+        if (buttonType == null || (!buttonType.equals("MENU") && !buttonType.equals("CONTROL"))) {
+            this.buttonType = "MENU"; // Default to MENU if invalid type is provided
+        } else {
+            this.buttonType = buttonType;
+        }
         //applyCurrentStyles();
         initializeStyles();
         applyCurrentStyles();
@@ -21,9 +27,15 @@ public class ControlButton extends StyledButton {
 
     @Override
     protected void initializeStyles() {
-        this.normalStyle = ButtonStyles.getGeneralButtonStyle(buttonType, "normal");
-        this.hoverStyle = ButtonStyles.getGeneralButtonStyle(buttonType, "hover");
-        this.pressedStyle = ButtonStyles.getGeneralButtonStyle(buttonType, "pressed");
+        if (buttonType.equals("MENU")) {
+            this.normalStyle = ButtonStyles.getGeneralButtonStyle(styleType, "normal");
+            this.hoverStyle = ButtonStyles.getGeneralButtonStyle(styleType, "hover");
+            this.pressedStyle = ButtonStyles.getGeneralButtonStyle(styleType, "pressed");
+        } else if (buttonType.equals("CONTROL")) {
+            this.normalStyle = ButtonStyles.getControlButtonStyle(styleType, "normal");
+            this.hoverStyle = ButtonStyles.getControlButtonStyle(styleType, "hover");
+            this.pressedStyle = ButtonStyles.getControlButtonStyle(styleType, "pressed");
+        }
     }
 
     @Override
