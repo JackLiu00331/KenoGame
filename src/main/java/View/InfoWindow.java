@@ -30,7 +30,8 @@ public class InfoWindow {
             "After selecting your numbers, click 'Play' to start the game round.\n\n" +
             "Once the game starts, 20 numbers will be drawn randomly.\n\n" +
             "Your winnings depend on how many of your chosen numbers match the drawn numbers.\n\n" +
-            "For each spots mode winning details, please hit 'Prize Table' in help menu to check.\n";
+            "For each spots mode winning details, please hit 'Prize Table' in help menu to check.\n\n" +
+            "Try 'Control + Shift + C' for a suprise!\n ";
 
 
     public static void createInfoWindow(int width, int height, String title, String content, String themeColor, String prefsKey, boolean showCheckBox) {
@@ -53,7 +54,11 @@ public class InfoWindow {
         VBox contentBox = createContentBox(content);
 
         CheckBox dontShowAgainCheckBox = showCheckBox ? createCheckBox(prefsKey, window) : null;
-        mainLayout.getChildren().addAll(titleLabel, contentBox, dontShowAgainCheckBox);
+        if (dontShowAgainCheckBox != null) {
+            mainLayout.getChildren().addAll(titleLabel, contentBox, dontShowAgainCheckBox);
+        } else {
+            mainLayout.getChildren().addAll(titleLabel, contentBox);
+        }
         mainLayout.setAlignment(Pos.TOP_CENTER);
         mainLayout.setSpacing(10);
 
@@ -83,7 +88,7 @@ public class InfoWindow {
 
         Label contentLabel = new Label(content);
         contentLabel.setStyle(
-                "-fx-font-size: 14px; " +
+                "-fx-font-size: 16px; " +
                         "-fx-text-fill: #ffffff; " +
                         "-fx-wrap-text: true; " +
                         "-fx-padding: 20; " +
@@ -100,7 +105,7 @@ public class InfoWindow {
         if (autoShow && !shouldShowAgain(PREFS_KEY_SHOW_RULES)) {
             return;
         }
-        createInfoWindow(400, 550, "Game Rules", InfoWindow.GAME_RULES, ThemeStyles.GOLD_DARK, PREFS_KEY_SHOW_RULES, true);
+        createInfoWindow(500, 620, "Game Rules", InfoWindow.GAME_RULES, ThemeStyles.GOLD_DARK, PREFS_KEY_SHOW_RULES, autoShow);
     }
 
     public static void showOdds(GameMode mode, boolean autoShow) {
@@ -138,7 +143,7 @@ public class InfoWindow {
             sb.append(String.format("Overall Odds: 1 in %.2f\n", PrizeTable.getOdds(spotsPlayed)));
         }
 
-        createInfoWindow(400, 500, "Prize Table", sb.toString(), ThemeStyles.GOLD_LIGHT, PREFS_KEY_SHOW_ODDS, true);
+        createInfoWindow(400, 550, "Prize Table", sb.toString(), ThemeStyles.GOLD_LIGHT, PREFS_KEY_SHOW_ODDS, autoShow);
     }
 
     public static void showOdds(GameMode mode) {

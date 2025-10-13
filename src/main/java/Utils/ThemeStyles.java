@@ -99,26 +99,6 @@ public class ThemeStyles {
                     "           innershadow(gaussian, rgba(255, 255, 255, 0.5), 5, 0, 0, 1);";
 
     /**
-     * Medium title - for Welcome page
-     */
-    public static final String GAME_TITLE_MEDIUM =
-            "-fx-font-size: 42px; " +
-                    "-fx-font-weight: bold; " +
-                    "-fx-font-family: 'Arial Black', 'Impact', sans-serif; " +
-                    "-fx-text-fill: linear-gradient(to bottom, #FFD700 0%, #FFA500 50%, #DAA520 100%); " +
-                    "-fx-effect: dropshadow(gaussian, rgba(218, 165, 32, 0.6), 12, 0.6, 0, 0);";
-
-    /**
-     * Subtitle - for subheadings
-     */
-    public static final String SUBTITLE =
-            "-fx-font-size: 20px; " +
-                    "-fx-font-weight: normal; " +
-                    "-fx-font-style: italic; " +
-                    "-fx-text-fill: #E8E8E8; " +
-                    "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 8, 0, 0, 2);";
-
-    /**
      * Status text - in-game prompt text
      */
     public static final String STATUS_TEXT =
@@ -144,16 +124,6 @@ public class ThemeStyles {
                     "-fx-text-fill: #FFD700; " +
                     "-fx-effect: dropshadow(gaussian, rgba(218, 165, 32, 0.8), 8, 0, 0, 0);";
 
-    /**
-     * Jackpot text - used when winning the jackpot
-     */
-    public static final String JACKPOT_TEXT =
-            "-fx-font-size: 48px; " +
-                    "-fx-font-weight: bold; " +
-                    "-fx-font-family: 'Arial Black', sans-serif; " +
-                    "-fx-text-fill: linear-gradient(to right, #FFD700 0%, #FF6347 50%, #FFD700 100%); " +
-                    "-fx-effect: dropshadow(gaussian, rgba(255, 215, 0, 0.9), 20, 0.8, 0, 0), " +
-                    "           innershadow(gaussian, rgba(255, 255, 255, 0.7), 8, 0, 0, 2);";
 
     // ============ Decorative Element Styles ============
 
@@ -189,30 +159,7 @@ public class ThemeStyles {
                     "-fx-padding: 25; " +
                     "-fx-effect: innershadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 3);";
 
-    // ============ 信息标签样式（余额、模式等）============
 
-    /**
-     * 游戏模式标签样式 - 红色/橙色渐变背景
-     * 类似图片中的 "KENO" 标签
-     */
-    public static final String INFO_LABEL_MODE =
-            "-fx-background-color: linear-gradient(to right, #C0392B 0%, #E74C3C 50%, #C0392B 100%); " +
-                    "-fx-text-color: #ffffff" +
-                    "-fx-text-fill: white; " +
-                    "-fx-font-size: 16px; " +
-                    "-fx-font-weight: bold; " +
-                    "-fx-padding: 12 25 12 25; " +
-                    "-fx-background-radius: 20; " +
-                    "-fx-border-color: rgba(0, 0, 0, 0.3); " +
-                    "-fx-border-width: 2; " +
-                    "-fx-border-radius: 20; " +
-                    "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 10, 0, 0, 3), " +
-                    "           innershadow(gaussian, rgba(255, 255, 255, 0.2), 3, 0, 0, 1);";
-
-    /**
-     * 余额标签样式 - 金色/黄色渐变背景
-     * 类似图片中的 "+75.00 USD" 标签
-     */
     public static final String INFO_LABEL_BALANCE =
             "-fx-background-color: linear-gradient(to right, #F39C12 0%, #F1C40F 50%, #F39C12 100%); " +
                     "-fx-text-fill: #2C3E50; " +
@@ -227,41 +174,60 @@ public class ThemeStyles {
                     "-fx-effect: dropshadow(gaussian, rgba(243, 156, 18, 0.6), 12, 0, 0, 3), " +
                     "           innershadow(gaussian, rgba(255, 255, 255, 0.3), 3, 0, 0, 1);";
 
-    /**
-     * 状态标签样式 - 绿色背景（用于积极信息）
-     */
+
     public static final String INFO_LABEL_STATUS_POSITIVE =
-            "-fx-background-color: linear-gradient(to right, #27AE60 0%, #2ECC71 50%, #27AE60 100%); " +
+            "-fx-background-color: #212226; " +
+                    "-fx-background-radius: 12; " +
+                    "-fx-border-color: #DAA520; " +
+                    "-fx-border-width: 2; " +
+                    "-fx-border-radius: 12; " +
+                    "-fx-text-fill: #0aff0a; " +
+                    "-fx-font-size: 15px; " +
+                    "-fx-font-weight: bold; " +
+                    "-fx-font-family: 'Courier New', monospace; " +
+                    "-fx-padding: 20; " +
+                    "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 15, 0, 0, 5);";
+
+    public static final String INFO_LABEL_STATUS_DANGER =
+            "-fx-background-color: #212226; " +
+                    "-fx-background-radius: 12; " +
+                    "-fx-border-color: #DAA520; " +
+                    "-fx-border-width: 2; " +
+                    "-fx-border-radius: 12; " +
+                    "-fx-text-fill: #E74C3C; " +
+                    "-fx-font-size: 15px; " +
+                    "-fx-font-weight: bold; " +
+                    "-fx-font-family: 'Courier New', monospace; " +
+                    "-fx-padding: 20; " +
+                    "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 15, 0, 0, 5);";
+
+
+    public static final String INFO_LABEL_STATUS_NEUTRAL =
+            "-fx-background-color: #212226; " +
+                    "-fx-background-radius: 12; " +
+                    "-fx-border-color: #DAA520; " +
+                    "-fx-border-width: 2; " +
+                    "-fx-border-radius: 12; " +
                     "-fx-text-fill: white; " +
                     "-fx-font-size: 15px; " +
                     "-fx-font-weight: bold; " +
-                    "-fx-padding: 10 20 10 20; " +
-                    "-fx-background-radius: 18; " +
-                    "-fx-border-color: rgba(0, 0, 0, 0.3); " +
-                    "-fx-border-width: 2; " +
-                    "-fx-border-radius: 18; " +
-                    "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 8, 0, 0, 2), " +
-                    "           innershadow(gaussian, rgba(255, 255, 255, 0.2), 3, 0, 0, 1);";
+                    "-fx-font-family: 'Courier New', monospace; " +
+                    "-fx-padding: 20; " +
+                    "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 15, 0, 0, 5);";
 
-    /**
-     * 中性标签样式 - 蓝色背景（用于一般信息）
-     */
-    public static final String INFO_LABEL_NEUTRAL =
-            "-fx-background-color: linear-gradient(to right, #2980B9 0%, #3498DB 50%, #2980B9 100%); " +
-                    "-fx-text-fill: white; " +
+    public static final String INFO_LABEL_STATUS_SURPRISE =
+            "-fx-background-color: #212226; " +
+                    "-fx-background-radius: 12; " +
+                    "-fx-border-color: #DAA520; " +
+                    "-fx-border-width: 2; " +
+                    "-fx-border-radius: 12; " +
+                    "-fx-text-fill: #eb34eb; " +
                     "-fx-font-size: 15px; " +
                     "-fx-font-weight: bold; " +
-                    "-fx-padding: 10 20 10 20; " +
-                    "-fx-background-radius: 18; " +
-                    "-fx-border-color: rgba(0, 0, 0, 0.3); " +
-                    "-fx-border-width: 2; " +
-                    "-fx-border-radius: 18; " +
-                    "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 8, 0, 0, 2), " +
-                    "           innershadow(gaussian, rgba(255, 255, 255, 0.2), 3, 0, 0, 1);";
+                    "-fx-font-family: 'Courier New', monospace; " +
+                    "-fx-padding: 20; " +
+                    "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 15, 0, 0, 5);";
 
-    /**
-     * 投注金额标签样式 - 紫色渐变
-     */
     public static final String INFO_LABEL_BET =
             "-fx-background-color: linear-gradient(to right, #8E44AD 0%, #9B59B6 50%, #8E44AD 100%); " +
                     "-fx-text-fill: white; " +
@@ -276,9 +242,6 @@ public class ThemeStyles {
                     "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 8, 0, 0, 2), " +
                     "           innershadow(gaussian, rgba(255, 255, 255, 0.2), 3, 0, 0, 1);";
 
-    /**
-     * 信息区域容器样式
-     */
     public static final String INFO_AREA_CONTAINER =
             "-fx-background-color: rgba(0, 0, 0, 0.3); " +
                     "-fx-background-radius: 15; " +

@@ -12,7 +12,8 @@ public class GameController {
 
     private GameMode gameMode;
     private List<Integer> selectedNumbers;
-    private Random random;
+    private Random rand;
+    private static final int RANDOM_SYSTEM_SELECTION_COUNT = 20;
 
     public GameController() {
         this.gameMode = null;
@@ -58,7 +59,7 @@ public class GameController {
 
     public void randomSelectNumbersForUser() {
         selectedNumbers.clear();
-        Random rand = new Random();
+        rand = new Random();
         while (selectedNumbers.size() < getMaxSelections()) {
             int num = rand.nextInt(80) + 1; // Random number between 1 and 80
             if (!selectedNumbers.contains(num)) {
@@ -66,4 +67,17 @@ public class GameController {
             }
         }
     }
+
+    public List<Integer> randomSelectNumbersForSystem(boolean cheatMode) {
+        rand = new Random();
+        List<Integer> systemSelectedNumbers = cheatMode ? new ArrayList<>(getSelectedNumbers()) : new ArrayList<>();
+        while (systemSelectedNumbers.size() < RANDOM_SYSTEM_SELECTION_COUNT) { // System always selects 20 numbers
+            int num = rand.nextInt(80) + 1; // Random number between 1 and 80
+            if (!systemSelectedNumbers.contains(num)) {
+                systemSelectedNumbers.add(num);
+            }
+        }
+        return systemSelectedNumbers;
+    }
+
 }

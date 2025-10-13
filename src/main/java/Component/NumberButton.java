@@ -11,6 +11,7 @@ public class NumberButton extends Button implements SelectableButton {
 
     private final int number;
     private ButtonState currentState;
+    private boolean selectable = true;
 
     public NumberButton(int number) {
         super(String.valueOf(number));
@@ -44,8 +45,9 @@ public class NumberButton extends Button implements SelectableButton {
 
     @Override
     public boolean isSelected() {
-        return currentState == ButtonState.USER_SELECTED || currentState == ButtonState.BOTH_SELECTED;
+        return currentState == ButtonState.USER_SELECTED;
     }
+
 
     @Override
     public void select() {
@@ -111,7 +113,7 @@ public class NumberButton extends Button implements SelectableButton {
         return currentState;
     }
 
-    public boolean isWinning() {
+    public boolean bothSelected() {
         return currentState == ButtonState.BOTH_SELECTED;
     }
 
@@ -127,5 +129,18 @@ public class NumberButton extends Button implements SelectableButton {
 
     public int getNumber() {
         return number;
+    }
+
+    public void setState(ButtonState state) {
+        this.currentState = state;
+        updateState();
+    }
+
+    public boolean isSelectable() {
+        return selectable;
+    }
+
+    public void setSelectable(boolean selectable) {
+        this.selectable = selectable;
     }
 }
