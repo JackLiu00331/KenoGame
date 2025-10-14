@@ -2,7 +2,6 @@ package Component;
 
 import Utils.ButtonStyles;
 import javafx.scene.control.Button;
-import lombok.Getter;
 
 public class NumberButton extends Button implements SelectableButton {
     public enum ButtonState {
@@ -18,9 +17,7 @@ public class NumberButton extends Button implements SelectableButton {
         this.number = number;
         this.currentState = ButtonState.UNSELECTED;
 
-        this.setPrefSize(70, 70);
-        this.setMinSize(70, 70);
-        this.setMaxSize(70, 70);
+        this.setPrefSize(50, 50);
 
         updateState();
         setupMouseEvents();
@@ -109,7 +106,7 @@ public class NumberButton extends Button implements SelectableButton {
     }
 
     @Override
-    public Object getState() {
+    public ButtonState getState() {
         return currentState;
     }
 

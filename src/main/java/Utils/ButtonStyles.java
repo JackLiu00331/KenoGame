@@ -69,7 +69,7 @@ public class ButtonStyles {
         return String.format(
                 "-fx-background-color: %s; " +
                         "-fx-text-fill: white; " +
-                        "-fx-font-size: 16px; " +
+                        "-fx-font-size: 24px; " +
                         "-fx-font-weight: bold; " +
                         "-fx-background-radius: 8; " +
                         "-fx-border-radius: 8; " +
@@ -189,7 +189,7 @@ public class ButtonStyles {
                         "-fx-border-radius: 50%%; " +
                         "-fx-background-radius: 50%%; " +
                         "-fx-text-fill: white; " +
-                        "-fx-font-size: 22px; " +
+                        "-fx-font-size: 16px; " +
                         "-fx-font-weight: bold; " +
                         "-fx-cursor: hand; " +
                         "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 8, 0, 0, 3); " +
@@ -213,7 +213,7 @@ public class ButtonStyles {
                         "-fx-border-radius: 50%%; " +
                         "-fx-background-radius: 50%%; " +
                         "-fx-text-fill: #2A1520; " +
-                        "-fx-font-size: 22px; " +
+                        "-fx-font-size: 16px; " +
                         "-fx-font-weight: bold; " +
                         "-fx-cursor: hand; " +
                         "-fx-effect: dropshadow(gaussian, rgba(232, 90, 159, 0.6), 12, 0, 0, 0), " +
@@ -232,7 +232,7 @@ public class ButtonStyles {
                         "-fx-border-radius: 50%; " +
                         "-fx-background-radius: 50%; " +
                         "-fx-text-fill: white; " +
-                        "-fx-font-size: 22px; " +
+                        "-fx-font-size: 16px; " +
                         "-fx-font-weight: bold; " +
                         "-fx-cursor: hand; " +
                         "-fx-effect: dropshadow(gaussian, rgba(255, 215, 0, 0.8), 15, 0, 0, 0), " +
@@ -254,7 +254,7 @@ public class ButtonStyles {
                         "-fx-border-radius: 50%%; " +
                         "-fx-background-radius: 50%%; " +
                         "-fx-text-fill: #2A1520; " +
-                        "-fx-font-size: 22px; " +
+                        "-fx-font-size: 16px; " +
                         "-fx-font-weight: bold; " +
                         "-fx-cursor: hand; " +
                         "-fx-effect: dropshadow(gaussian, rgba(255, 165, 0, 0.9), 18, 0, 0, 0), " +

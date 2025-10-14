@@ -1,16 +1,16 @@
 package View;
 
 import Component.ControlButton;
+import Component.MenuFactory;
 import Model.PrizeTable;
 import javafx.util.Duration;
 import org.controlsfx.control.PopOver;
 import Component.NumberButton;
 import Controller.GameController;
 import Model.GameMode;
-import Model.PrizeItem;
+import Component.PrizeItemBox;
 import Utils.ButtonStyles;
 import Utils.ThemeStyles;
-import Utils.Util;
 import javafx.animation.PauseTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,6 +23,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import javafx.scene.media.AudioClip;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,9 +34,16 @@ public class GameStage {
     private GameController gameController;
     private NumberButton[] numberButtons = new NumberButton[80];
     private boolean allDisabled = false;
-    private List<PrizeItem> prizeItems;
+    private List<PrizeItemBox> prizeItemBoxes;
     private Integer currentMatchCount = 0;
     private boolean cheatMode = false;
+    private AudioClip clickSound;
+    private AudioClip clearSound;
+    private AudioClip matchSound;
+    private AudioClip modeChangeSound;
+    private AudioClip startGameSound;
+    private AudioClip finishRoundSound;
+    private AudioClip prizeMatchSound;
 
     private WelcomeStage welcomeStage;
     private Stage stage;
@@ -58,7 +66,14 @@ public class GameStage {
     private PopOver popOver;
 
     public GameStage(WelcomeStage welcomeStage) {
-        prizeItems = new ArrayList<>();
+        clickSound = new AudioClip(getClass().getResource("/sound/button.wav").toExternalForm());
+        clearSound = new AudioClip(getClass().getResource("/sound/clear.wav").toExternalForm());
+        matchSound = new AudioClip(getClass().getResource("/sound/match.wav").toExternalForm());
+        modeChangeSound = new AudioClip(getClass().getResource("/sound/mode.wav").toExternalForm());
+        startGameSound = new AudioClip(getClass().getResource("/sound/start.wav").toExternalForm());
+        finishRoundSound = new AudioClip(getClass().getResource("/sound/finish.wav").toExternalForm());
+        prizeMatchSound = new AudioClip(getClass().getResource("/sound/jackpot.wav").toExternalForm());
+        prizeItemBoxes = new ArrayList<>();
         this.welcomeStage = welcomeStage;
         gameController = new GameController();
         initializeStage();
@@ -80,7 +95,7 @@ public class GameStage {
         setUpCheatKeyHandler(scene);
         stage.setScene(scene);
         stage.setWidth(1200);
-        stage.setHeight(1000);
+        stage.setHeight(810);
         stage.setResizable(false);
 
         stage.setOnCloseRequest(e -> {
@@ -88,7 +103,7 @@ public class GameStage {
             handleBack();
         });
 
-        PauseTransition delay = new PauseTransition(Duration.seconds(1));
+        PauseTransition delay = new PauseTransition(Duration.seconds(1.5));
         delay.setOnFinished(e -> showModeSelectorPopOver());
         delay.play();
     }
@@ -134,7 +149,7 @@ public class GameStage {
         toolButtons.getChildren().addAll(randomButton, clearButton);
 
         playButton = new ControlButton("Play", ButtonStyles.ButtonType.SUCCESS, "CONTROL");
-        playButton.setPrefWidth(500);
+        playButton.setPrefWidth(400);
         playButton.setPrefHeight(98);
         playButton.setStyle(playButton.getStyle() + "-fx-font-size: 32px;");
         Image startIcon = new Image(getClass().getResourceAsStream("/icons/start.gif"));
@@ -158,6 +173,7 @@ public class GameStage {
     }
 
     private void handleStartGame() {
+        startGameSound.play();
         resetForNewRound();
         resetPrizeHighlights();
         controlArea.setDisable(true);
@@ -178,7 +194,7 @@ public class GameStage {
         Collections.sort(systemSelections);
 
         for (int num : systemSelections) {
-            PauseTransition pause = new PauseTransition(Duration.seconds(0.4 * systemSelections.indexOf(num)));
+            PauseTransition pause = new PauseTransition(Duration.seconds(0.2 * systemSelections.indexOf(num)));
             pause.setOnFinished(e -> {
                 numberButtons[num - 1].systemSelect();
                 if (gameController.getSelectedNumbers().contains(num)) {
@@ -194,10 +210,16 @@ public class GameStage {
     }
 
     private PauseTransition getProcessingTransition(List<Integer> systemSelections) {
-        PauseTransition processPause = new PauseTransition(Duration.seconds(0.4 * systemSelections.size() + 0.5));
+        PauseTransition processPause = new PauseTransition(Duration.seconds(0.2 * systemSelections.size() + 0.3));
         processPause.setOnFinished(ev -> {
+            if(PrizeTable.isValidPrize(gameController.getMaxSelections(),currentMatchCount)) {
+                prizeMatchSound.play();
+                statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_SURPRISE);
+            }else {
+                finishRoundSound.play();
+                statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
+            }
             statusLabel.setText("Round over! You matched " + currentMatchCount + " number(s).");
-            statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
             slotIconView.setVisible(false);
             slotIconView2.setVisible(false);
             currentMatchCount = 0;
@@ -212,7 +234,7 @@ public class GameStage {
         HBox infoArea = new HBox();
         infoArea.setAlignment(Pos.CENTER);
         infoArea.setSpacing(10);
-        infoArea.setPadding(new Insets(20));
+        infoArea.setPadding(new Insets(10));
 
         balanceLabel = new Label("Current Balance: $1000");
         balanceLabel.setStyle(ThemeStyles.INFO_LABEL_BALANCE);
@@ -223,10 +245,10 @@ public class GameStage {
         statusLabel.setPrefWidth(400);
 
         modeSelector = new MenuButton("Choose Game Mode");
-        MenuItem oneSpot = Util.createMenuItem("1 Spot", () -> handleModeChange(GameMode.ONE_SPOT));
-        MenuItem fourSpot = Util.createMenuItem("4 Spot", () -> handleModeChange(GameMode.FOUR_SPOT));
-        MenuItem eightSpot = Util.createMenuItem("8 Spot", () -> handleModeChange(GameMode.EIGHT_SPOT));
-        MenuItem tenSpot = Util.createMenuItem("10 Spot", () -> handleModeChange(GameMode.TEN_SPOT));
+        MenuItem oneSpot = MenuFactory.createMenuItem("1 Spot", () -> handleModeChange(GameMode.ONE_SPOT));
+        MenuItem fourSpot = MenuFactory.createMenuItem("4 Spot", () -> handleModeChange(GameMode.FOUR_SPOT));
+        MenuItem eightSpot = MenuFactory.createMenuItem("8 Spot", () -> handleModeChange(GameMode.EIGHT_SPOT));
+        MenuItem tenSpot = MenuFactory.createMenuItem("10 Spot", () -> handleModeChange(GameMode.TEN_SPOT));
         modeSelector.setStyle(ButtonStyles.MENU_BUTTON_MODE);
         modeSelector.getItems().addAll(oneSpot, fourSpot, eightSpot, tenSpot);
         modeSelector.setPrefWidth(244);
@@ -248,6 +270,7 @@ public class GameStage {
     }
 
     private void handleModeChange(GameMode gameMode) {
+        modeChangeSound.play();
         gameController.setGameMode(gameMode);
         modeSelector.setText("Game Mode: " + gameMode.getDisplayName());
         statusLabel.setText("Mode changed to " + gameMode.getDisplayName());
@@ -263,14 +286,14 @@ public class GameStage {
 
     private void updatePrizeMatchPanel(GameMode mode) {
         prizeMatchPanel.getChildren().clear();
-        prizeItems.clear();
+        prizeItemBoxes.clear();
         Map<Integer, Integer> prizes = PrizeTable.getPrizeTableForSpots(mode.getMaxSpots());
         prizes.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
-            PrizeItem item = new PrizeItem(entry.getKey(), entry.getValue());
-            prizeItems.add(item);
+            PrizeItemBox item = new PrizeItemBox(entry.getKey(), entry.getValue());
+            prizeItemBoxes.add(item);
         });
 
-        List<PrizeItem> temp = new ArrayList<>(prizeItems);
+        List<PrizeItemBox> temp = new ArrayList<>(prizeItemBoxes);
         Collections.reverse(temp);
         prizeMatchPanel.getChildren().setAll(temp);
     }
@@ -279,7 +302,7 @@ public class GameStage {
         HBox gameArea = new HBox();
         gameArea.setAlignment(Pos.CENTER);
         gameArea.setSpacing(20);
-        gameArea.setPadding(new Insets(20));
+        gameArea.setPadding(new Insets(10));
 
         numberGrid = createNumGrid();
         prizeMatchPanel = createPrizeMatchPanel();
@@ -292,7 +315,8 @@ public class GameStage {
         prizePanel.setSpacing(20);
         prizePanel.setPadding(new Insets(10));
         prizePanel.setStyle("-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 10;");
-        prizePanel.setPrefWidth(250);
+        prizePanel.setPrefWidth(200);
+        prizePanel.setPrefHeight(200);
         prizePanel.setAlignment(Pos.BOTTOM_CENTER);
         return prizePanel;
     }
@@ -319,6 +343,7 @@ public class GameStage {
         if (!btn.isSelectable()) {
             return;
         }
+        clickSound.play();
         resetForNewRound();
         resetPrizeHighlights();
         if (btn.isSelected()) {
@@ -358,8 +383,12 @@ public class GameStage {
     }
 
     private void handleClearSelection() {
+        if (playButton.isDisabled()) {
+            return;
+        }
         resetNumberButtons();
         resetPrizeHighlights();
+        clearSound.play();
         gameController.getSelectedNumbers().clear();
         statusLabel.setText("Selections cleared.");
         statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
@@ -368,22 +397,20 @@ public class GameStage {
 
     private MenuBar createMenu() {
         MenuBar menuBar = new MenuBar();
-        Menu settings = new Menu("Settings");
-        Menu help = new Menu("Help");
-        MenuItem gameRules = Util.createMenuItem("Game Rules", InfoWindow::showRules);
-        MenuItem prizeTable = Util.createMenuItem("Prize Table", () -> InfoWindow.showOdds(gameController.getGameMode() == null ? GameMode.TEN_SPOT : gameController.getGameMode()));
-        MenuItem resetPreferences = Util.createMenuItem("Reset Preferences", () -> {
-            InfoWindow.resetAllPreferences();
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Settings Reset");
-            alert.setContentText("All preferences have been reset to default.");
-            alert.showAndWait();
-        });
-        MenuItem changeTheme = Util.createMenuItem("Change Theme", this::toggleTheme);
-        settings.getItems().addAll(changeTheme, resetPreferences);
-        help.getItems().addAll(gameRules, prizeTable);
+        Menu help = MenuFactory.createHelpMenu(InfoWindow::showRules,
+                () -> InfoWindow.showOdds(gameController.getGameMode() == null ? GameMode.TEN_SPOT : gameController.getGameMode()),
+                stage::close);
+        Menu settings = MenuFactory.createSettingsMenu(this::handleResetPreferences, this::toggleTheme);
         menuBar.getMenus().addAll(settings, help);
         return menuBar;
+    }
+
+    public void handleResetPreferences() {
+        InfoWindow.resetAllPreferences();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Settings Reset");
+        alert.setContentText("All preferences have been reset to default.");
+        alert.showAndWait();
     }
 
     public void show() {
@@ -409,6 +436,7 @@ public class GameStage {
     private void handleRandomSelection() {
         resetNumberButtons();
         resetPrizeHighlights();
+        clickSound.play();
         gameController.randomSelectNumbersForUser();
         for (int num : gameController.getSelectedNumbers()) {
             numberButtons[num - 1].select();
@@ -454,23 +482,25 @@ public class GameStage {
     }
 
     public void updatePrizeHighlights() {
-        for (PrizeItem item : prizeItems) {
+        for (PrizeItemBox item : prizeItemBoxes) {
             if (item.getRequiredMatches() < currentMatchCount) {
                 item.reset();
                 continue;
             }
             if (item.getRequiredMatches() == currentMatchCount) {
                 item.highlightPrize();
+                matchSound.play();
                 break;
             }
         }
     }
 
     public void resetPrizeHighlights() {
-        for (PrizeItem item : prizeItems) {
+        for (PrizeItemBox item : prizeItemBoxes) {
             item.reset();
         }
     }
+
 
     private void setUpCheatKeyHandler(Scene scene) {
         scene.setOnKeyPressed(event -> {
@@ -478,6 +508,21 @@ public class GameStage {
                 case C:
                     if (event.isControlDown() && event.isShiftDown()) {
                         cheatMode = true;
+                    }
+                    break;
+                case ENTER:
+                    if (gameController.getGameMode() != null && !playButton.isDisable()) {
+                        handleStartGame();
+                    }
+                    break;
+                case Q:
+                    if (gameController.getGameMode() != null && !playButton.isDisable()) {
+                        handleClearSelection();
+                    }
+                    break;
+                case R:
+                    if (gameController.getGameMode() != null) {
+                        handleRandomSelection();
                     }
                     break;
                 default:

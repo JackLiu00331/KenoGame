@@ -53,6 +53,13 @@ public class PrizeTable {
         return PRIZE_TABLE.getOrDefault(spots, new HashMap<>());
     }
 
+    public static boolean isValidPrize(int spots, int hits) {
+        if (PRIZE_TABLE.containsKey(spots)) {
+            return PRIZE_TABLE.get(spots).containsKey(hits);
+        }
+        return false;
+    }
+
     public static void printPrizeTable(int spots) {
         System.out.println("Prize Table:");
         Map<Integer, Integer> table = getPrizeTableForSpots(spots);

@@ -1,9 +1,7 @@
 package Component;
 
 import Utils.ButtonStyles;
-import lombok.Getter;
 
-@Getter
 public class ControlButton extends StyledButton {
 
     private final ButtonStyles.ButtonType styleType;
@@ -51,5 +49,17 @@ public class ControlButton extends StyledButton {
     @Override
     public Object getState() {
         return buttonType;
+    }
+
+    public String getActionType() {
+        return actionType;
+    }
+
+    public String getButtonType() {
+        return buttonType;
+    }
+
+    public ButtonStyles.ButtonType getStyleType() {
+        return styleType;
     }
 }

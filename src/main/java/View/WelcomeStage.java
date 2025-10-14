@@ -1,10 +1,11 @@
 package View;
 
-import Component.ControlButton;
+import Component.ButtonBuilder;
+import Component.LayoutBuilder;
+import Component.MenuFactory;
 import Model.GameMode;
 import Utils.ButtonStyles;
 import Utils.ThemeStyles;
-import Utils.Util;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -49,10 +50,6 @@ public class WelcomeStage {
     }
 
     private VBox createScene() {
-        VBox vbox = new VBox();
-        vbox.setSpacing(10);
-        vbox.setStyle("-fx-padding: 10;");
-
         Label gameTitle = new Label("KENO");
         gameTitle.setStyle(ThemeStyles.GAME_TITLE_LARGE);
         gameTitle.setPadding(new Insets(0, 0, 20, 0));
@@ -62,47 +59,34 @@ public class WelcomeStage {
         ImageView gameIconView2 = new ImageView(gameIcon);
         gameIconView2.setScaleX(-1);
 
-        HBox titleBox = new HBox();
-        titleBox.getChildren().addAll(gameIconView, gameTitle, gameIconView2);
-        titleBox.setAlignment(Pos.CENTER);
-        titleBox.setSpacing(10);
+        HBox titleBox = LayoutBuilder.hbox()
+                .alignment(Pos.CENTER)
+                .spacing(10)
+                .children(gameIconView, gameTitle, gameIconView2)
+                .build();
 
-        Button startGameButton = createStartGameButton();
-        Button exitGameButton = createExitGameButton();
+        Button startGameButton = new ButtonBuilder("Start").asMenu().size(150, -1).onClick(e -> handleStart()).style(ButtonStyles.ButtonType.SUCCESS).build();
+        Button exitGameButton = new ButtonBuilder("Exit").asMenu().size(150, -1).onClick(e -> stage.close()).style(ButtonStyles.ButtonType.DANGER).build();
 
-        vbox.getChildren().addAll(titleBox, startGameButton, exitGameButton);
-        vbox.setAlignment(Pos.CENTER);
-        vbox.setSpacing(20);
-        return vbox;
+        VBox scene = LayoutBuilder.vbox()
+                .alignment(Pos.CENTER)
+                .spacing(20)
+                .padding(new Insets(20))
+                .children(titleBox, startGameButton, exitGameButton)
+                .build();
+
+        return scene;
     }
 
-    private Button createExitGameButton() {
-        ControlButton exitGameButton = new ControlButton("Exit", ButtonStyles.ButtonType.DANGER, "MENU");
-        exitGameButton.setMaxWidth(150);
-        exitGameButton.setOnAction(e -> stage.close());
-        return exitGameButton;
-    }
-
-    private Button createStartGameButton() {
-        ControlButton startGameButton = new ControlButton("Start", ButtonStyles.ButtonType.SUCCESS, "MENU");
-        startGameButton.setMaxWidth(150);
-        startGameButton.setOnAction(e -> {
-            gameStage = new GameStage(this);
-            gameStage.show();
-            stage.close();
-        });
-        return startGameButton;
+    private void handleStart() {
+        gameStage = new GameStage(this);
+        gameStage.show();
+        stage.close();
     }
 
     private MenuBar createMenuBar() {
         MenuBar menuBar = new MenuBar();
-        Menu gameMenu = new Menu("Help");
-
-        MenuItem gameRules = Util.createMenuItem("Game Rules", InfoWindow::showRules);
-        MenuItem prizeTable = Util.createMenuItem("Prize Table", () -> InfoWindow.showOdds(GameMode.TEN_SPOT));
-
-        MenuItem exitGame = Util.createMenuItem("Exit Game", () -> stage.close());
-        gameMenu.getItems().addAll(gameRules, prizeTable, exitGame);
+        Menu gameMenu = MenuFactory.createHelpMenu(InfoWindow::showRules, () -> InfoWindow.showOdds(GameMode.TEN_SPOT), stage::close);
         menuBar.getMenus().add(gameMenu);
         return menuBar;
     }

@@ -150,15 +150,6 @@ public class ThemeStyles {
                     "-fx-padding: 20; " +
                     "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 15, 0, 0, 5);";
 
-    /**
-     * Game area container style - container for number buttons
-     */
-    public static final String GAME_AREA =
-            "-fx-background-color: rgba(0, 0, 0, 0.3); " +
-                    "-fx-background-radius: 15; " +
-                    "-fx-padding: 25; " +
-                    "-fx-effect: innershadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 3);";
-
 
     public static final String INFO_LABEL_BALANCE =
             "-fx-background-color: linear-gradient(to right, #F39C12 0%, #F1C40F 50%, #F39C12 100%); " +
