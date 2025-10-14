@@ -26,12 +26,12 @@ public class InfoWindow {
 
     public static final String GAME_RULES = "Pick a mode first by using the button at left top corner!\n\n" +
             "Each game round, you can choose up to 1, 4, 8, 10 numbers to play.\n\n" +
-            "You can also hit 'Random' to let the system randomly pick numbers for you.\n\n" +
-            "After selecting your numbers, click 'Play' to start the game round.\n\n" +
+            "You can also hit 'Random' to let the system pick numbers for you.\n\n" +
+            "After selecting your numbers, click 'Play' to start.\n\n" +
             "Once the game starts, 20 numbers will be drawn randomly.\n\n" +
             "Your winnings depend on how many of your chosen numbers match the drawn numbers.\n\n" +
             "For each spots mode winning details, please hit 'Prize Table' in help menu to check.\n\n" +
-            "Try 'Control + Shift + C' for a suprise!\n ";
+            "Try 'Control + Shift + C' for a surprise!\n ";
 
 
     public static void createInfoWindow(int width, int height, String title, String content, String themeColor, String prefsKey, boolean showCheckBox) {
@@ -105,7 +105,7 @@ public class InfoWindow {
         if (autoShow && !shouldShowAgain(PREFS_KEY_SHOW_RULES)) {
             return;
         }
-        createInfoWindow(500, 620, "Game Rules", InfoWindow.GAME_RULES, ThemeStyles.GOLD_DARK, PREFS_KEY_SHOW_RULES, autoShow);
+        createInfoWindow(500, 580, "Game Rules", InfoWindow.GAME_RULES, ThemeStyles.GOLD_DARK, PREFS_KEY_SHOW_RULES, autoShow);
     }
 
     public static void showOdds(GameMode mode, boolean autoShow) {

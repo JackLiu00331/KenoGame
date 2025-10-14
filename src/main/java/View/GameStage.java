@@ -62,7 +62,6 @@ public class GameStage {
     private ControlButton clearButton;
     private ControlButton autoPlayButton;
     private ControlButton betButton;
-    private PauseTransition slowPause = new PauseTransition(Duration.seconds(0.4));
     private PopOver popOver;
 
     public GameStage(WelcomeStage welcomeStage) {
@@ -77,6 +76,7 @@ public class GameStage {
         this.welcomeStage = welcomeStage;
         gameController = new GameController();
         initializeStage();
+        PauseTransition slowPause = new PauseTransition(Duration.seconds(0.4));
         slowPause.setOnFinished(e -> {
             InfoWindow.showRules(true);
         });
@@ -103,7 +103,7 @@ public class GameStage {
             handleBack();
         });
 
-        PauseTransition delay = new PauseTransition(Duration.seconds(1.5));
+        PauseTransition delay = new PauseTransition(Duration.seconds(1.2));
         delay.setOnFinished(e -> showModeSelectorPopOver());
         delay.play();
     }
@@ -136,7 +136,7 @@ public class GameStage {
 
     private HBox createControlArea() {
         HBox controlArea = new HBox();
-        controlArea.setSpacing(20);
+        controlArea.setSpacing(50);
         VBox toolButtons = new VBox();
         VBox featureButtons = new VBox();
         toolButtons.setSpacing(10);
@@ -178,6 +178,7 @@ public class GameStage {
         resetPrizeHighlights();
         controlArea.setDisable(true);
         setAllNumberSelectable(false);
+        modeSelector.setDisable(true);
         List<Integer> systemSelections = gameController.randomSelectNumbersForSystem(cheatMode);
         slotIconView.setVisible(true);
         slotIconView2.setVisible(true);
@@ -225,6 +226,7 @@ public class GameStage {
             currentMatchCount = 0;
             controlArea.setDisable(false);
             setAllNumberSelectable(true);
+            modeSelector.setDisable(false);
         });
         return processPause;
     }
