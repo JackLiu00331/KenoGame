@@ -2,6 +2,7 @@ package View;
 
 import Component.ControlButton;
 import Component.MenuFactory;
+import Controller.AudioController;
 import Model.GameDrawings;
 import Model.GameHistory;
 import Model.PrizeTable;
@@ -44,14 +45,7 @@ public class GameStage {
     private Integer totalWinnings = 0;
     private List<GameHistory> gameHistories;
     private boolean cheatMode = false;
-    private AudioClip clickSound;
-    private AudioClip clearSound;
-    private AudioClip matchSound;
-    private AudioClip modeChangeSound;
-    private AudioClip startGameSound;
-    private AudioClip finishRoundSound;
-    private AudioClip prizeMatchSound;
-
+    private AudioController audioController;
     private WelcomeStage welcomeStage;
     private Stage stage;
     private VBox root;
@@ -73,13 +67,7 @@ public class GameStage {
     private PopOver drawingsPopOver;
 
     public GameStage(WelcomeStage welcomeStage) {
-        clickSound = new AudioClip(getClass().getResource("/sound/button.wav").toExternalForm());
-        clearSound = new AudioClip(getClass().getResource("/sound/clear.wav").toExternalForm());
-        matchSound = new AudioClip(getClass().getResource("/sound/match.wav").toExternalForm());
-        modeChangeSound = new AudioClip(getClass().getResource("/sound/mode.wav").toExternalForm());
-        startGameSound = new AudioClip(getClass().getResource("/sound/start.wav").toExternalForm());
-        finishRoundSound = new AudioClip(getClass().getResource("/sound/finish.wav").toExternalForm());
-        prizeMatchSound = new AudioClip(getClass().getResource("/sound/jackpot.wav").toExternalForm());
+        audioController = new AudioController();
         prizeItemBoxes = new ArrayList<>();
         gameHistories = new ArrayList<>();
         this.welcomeStage = welcomeStage;
@@ -103,7 +91,7 @@ public class GameStage {
         Scene scene = new Scene(root);
         setUpCheatKeyHandler(scene);
         stage.setScene(scene);
-        stage.setWidth(1200);
+        stage.setWidth(1000);
         stage.setHeight(810);
         stage.setResizable(false);
 
@@ -224,7 +212,7 @@ public class GameStage {
 
     private void startNextRound() {
         currentRounds++;
-        startGameSound.play();
+        audioController.playSound(AudioController.START_SOUND);
         resetForNewRound();
         resetPrizeHighlights();
         controlArea.setDisable(true);
@@ -270,10 +258,10 @@ public class GameStage {
             int roundPrize = PrizeTable.getPrizeForHits(gameController.getMaxSelections(), matchedCount);
             totalWinnings += roundPrize;
             if(PrizeTable.isValidPrize(gameController.getMaxSelections(),currentMatchCount)) {
-                prizeMatchSound.play();
+                audioController.playSound(AudioController.JACKPOT_SOUND);
                 statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_SURPRISE);
             }else {
-                finishRoundSound.play();
+                audioController.playSound(AudioController.FINISH_SOUND);
                 statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
             }
             statusLabel.setText("Round over! You matched " + currentMatchCount + " number(s).");
@@ -365,7 +353,7 @@ public class GameStage {
     }
 
     private void handleDrawingsChange(GameDrawings gameDrawings) {
-        modeChangeSound.play();
+        audioController.playSound(AudioController.MODE_SOUND);
         gameController.setGameDrawings(gameDrawings);
         drawingsSelector.setText("Draws : " + gameDrawings.getMaxDrawings());
         statusLabel.setText("Drawings changed to " + gameDrawings.getDisplayName() + "(s).");
@@ -395,7 +383,7 @@ public class GameStage {
     }
 
     private void handleModeChange(GameMode gameMode) {
-        modeChangeSound.play();
+        audioController.playSound(AudioController.MODE_SOUND);
         gameController.setGameMode(gameMode);
         modeSelector.setText("Spots : " + gameMode.getMaxSpots());
         statusLabel.setText("Mode changed to " + gameMode.getDisplayName() + "(s).");
@@ -473,7 +461,7 @@ public class GameStage {
         if (!btn.isSelectable()) {
             return;
         }
-        clickSound.play();
+        audioController.playSound(AudioController.CLICK_SOUND);
         resetForNewRound();
         resetPrizeHighlights();
         if (btn.isSelected()) {
@@ -518,7 +506,7 @@ public class GameStage {
         }
         resetNumberButtons();
         resetPrizeHighlights();
-        clearSound.play();
+        audioController.playSound(AudioController.CLEAR_SOUND);
         gameController.getSelectedNumbers().clear();
         statusLabel.setText("Selections cleared.");
         statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
@@ -566,7 +554,7 @@ public class GameStage {
     private void handleRandomSelection() {
         resetNumberButtons();
         resetPrizeHighlights();
-        clickSound.play();
+        audioController.playSound(AudioController.CLICK_SOUND);
         gameController.randomSelectNumbersForUser();
         for (int num : gameController.getSelectedNumbers()) {
             numberButtons[num - 1].select();
@@ -620,7 +608,7 @@ public class GameStage {
             }
             if (item.getRequiredMatches() == currentMatchCount) {
                 item.highlightPrize();
-                matchSound.play();
+                audioController.playSound(AudioController.MATCH_SOUND);
                 break;
             }
         }

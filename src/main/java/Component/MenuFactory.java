@@ -8,7 +8,6 @@ import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 
 public class MenuFactory {
-    private GameMode gameMode;
 
     public static Menu createHelpMenu(Runnable showRulesAction, Runnable showOddsAction, Runnable exitAction) {
         Menu gameMenu = new Menu("Help");
