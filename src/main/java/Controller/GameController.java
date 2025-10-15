@@ -1,6 +1,7 @@
 package Controller;
 
 import Model.GameDrawings;
+import Model.GameHistory;
 import Model.GameMode;
 
 import java.util.ArrayList;
@@ -13,12 +14,14 @@ public class GameController {
     private GameMode gameMode;
     private GameDrawings gameDrawings;
     private List<Integer> selectedNumbers;
+    private List<GameHistory> gameHistories;
     private Random rand;
     private static final int RANDOM_SYSTEM_SELECTION_COUNT = 20;
 
     public GameController() {
         this.gameMode = null;
         this.selectedNumbers = new ArrayList<>();
+        this.gameHistories = new ArrayList<>();
     }
 
     public void setGameMode(GameMode mode) {
@@ -95,6 +98,26 @@ public class GameController {
             }
         }
         return systemSelectedNumbers;
+    }
+
+    public void addGameHistory(GameHistory history) {
+        gameHistories.add(history);
+    }
+
+
+    public List<GameHistory> getGameHistories() {
+        return gameHistories;
+    }
+
+    public String generateHistoryText() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%-10s %-15s %-15s %-15s\n", "ID","Total Rounds", "Total Matches", "Total Winnings"));
+        sb.append("-----------------------------------------------------\n");
+        for (int i = 0; i < gameHistories.size(); i++) {
+            GameHistory history = gameHistories.get(i);
+            sb.append(String.format("%-25d %-25d %-30d $%-14d\n", i + 1, history.getTotalRounds(), history.getTotalMatchedCount(), history.getTotalPrize()));
+        }
+        return sb.toString();
     }
 
 }

@@ -2,6 +2,7 @@ package View;
 
 import Component.ControlButton;
 import Component.MenuFactory;
+import Controller.AnimationController;
 import Controller.AudioController;
 import Model.GameDrawings;
 import Model.GameHistory;
@@ -26,7 +27,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.scene.media.AudioClip;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,19 +35,15 @@ import java.util.Map;
 
 public class GameStage {
 
+    // Data Fields
     private GameController gameController;
     private NumberButton[] numberButtons = new NumberButton[80];
-    private boolean allDisabled = false;
-    private List<PrizeItemBox> prizeItemBoxes;
-    private Integer currentMatchCount = 0;
-    private Integer currentRounds = 0;
-    private Integer totalRounds = 0;
-    private Integer totalMatchCount = 0;
-    private Integer totalWinnings = 0;
-    private List<GameHistory> gameHistories;
     private boolean cheatMode = false;
     private AudioController audioController;
     private WelcomeStage welcomeStage;
+    private AnimationController animationController;
+
+    // UI Components
     private Stage stage;
     private VBox root;
     private VBox prizeMatchPanel;
@@ -63,21 +60,15 @@ public class GameStage {
     private ControlButton clearButton;
     private ControlButton historyButton;
     private ControlButton restartButton;
-    private PopOver modePopOver;
-    private PopOver drawingsPopOver;
 
     public GameStage(WelcomeStage welcomeStage) {
         audioController = new AudioController();
-        prizeItemBoxes = new ArrayList<>();
-        gameHistories = new ArrayList<>();
-        this.welcomeStage = welcomeStage;
         gameController = new GameController();
         initializeStage();
-        PauseTransition slowPause = new PauseTransition(Duration.seconds(0.4));
-        slowPause.setOnFinished(e -> {
-            InfoWindow.showRules(true);
-        });
-        slowPause.play();
+        animationController = new AnimationController(audioController, gameController, prizeMatchPanel, controlArea,modeSelector,drawingsSelector,statusLabel,slotIconView,slotIconView2,numberButtons,cheatMode);
+        animationController.showNotification(modeSelector);
+        this.welcomeStage = welcomeStage;
+        animationController.popUpGameRules();
     }
 
     private void initializeStage() {
@@ -100,38 +91,7 @@ public class GameStage {
             handleBack();
         });
 
-        PauseTransition delay = new PauseTransition(Duration.seconds(1.2));
-        delay.setOnFinished(e -> showModeSelectorPopOver());
-        delay.play();
     }
-
-
-    private void showModeSelectorPopOver() {
-        if (modePopOver != null && modePopOver.isShowing()) {
-            modePopOver.hide();
-        }
-        Label tip = new Label("Select game mode here !!!");
-        tip.setStyle("-fx-padding: 10; -fx-font-size: 16px;");
-        modePopOver = new PopOver(tip);
-        modePopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-        modePopOver.setDetachable(false);
-        modePopOver.setAutoHide(false);
-        modePopOver.show(modeSelector);
-    }
-
-    private void showDrawingsSelectorPopOver() {
-        if (drawingsPopOver != null && drawingsPopOver.isShowing()) {
-            drawingsPopOver.hide();
-        }
-        Label tip = new Label("Select drawings here !!!");
-        tip.setStyle("-fx-padding: 10; -fx-font-size: 16px;");
-        drawingsPopOver = new PopOver(tip);
-        drawingsPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-        drawingsPopOver.setDetachable(false);
-        drawingsPopOver.setAutoHide(false);
-        drawingsPopOver.show(drawingsSelector);
-    }
-
 
     private VBox createLayout() {
         VBox layout = new VBox();
@@ -175,7 +135,7 @@ public class GameStage {
         restartButton = new ControlButton("Restart", ButtonStyles.ButtonType.DANGER, "CONTROL");
         historyButton.setPrefWidth(150);
         historyButton.setOnAction(e -> {
-            String histories = gameHistories.isEmpty() ? "No game history available." : generateHistoryText();
+            String histories = gameController.getGameHistories().isEmpty() ? "No game history available." : gameController.generateHistoryText();
             InfoWindow.showHistory(histories);
         });
         restartButton.setPrefWidth(150);
@@ -187,124 +147,17 @@ public class GameStage {
         return controlArea;
     }
 
-    private String generateHistoryText() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%-10s %-15s %-15s %-15s\n", "ID","Total Rounds", "Total Matches", "Total Winnings"));
-        sb.append("-----------------------------------------------------\n");
-        for (int i = 0; i < gameHistories.size(); i++) {
-            GameHistory history = gameHistories.get(i);
-            sb.append(String.format("%-25d %-25d %-30d $%-14d\n", i + 1, history.getTotalRounds(), history.getTotalMatchedCount(), history.getTotalPrize()));
-        }
-        return sb.toString();
-    }
+
 
     private void handleStartGame() {
-        currentRounds = 0;
-        totalRounds = gameController.getMaxDrawings();
-        totalWinnings = 0;
         if(!gameController.isReadyToPlay()){
             statusLabel.setText("Please select " + gameController.getMaxSelections() + " numbers to play.");
             statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_DANGER);
             return;
         }
-       startNextRound();
+        animationController.startNextRound();
     }
 
-    private void startNextRound() {
-        currentRounds++;
-        audioController.playSound(AudioController.START_SOUND);
-        resetForNewRound();
-        resetPrizeHighlights();
-        controlArea.setDisable(true);
-        setAllNumberSelectable(false);
-        modeSelector.setDisable(true);
-        drawingsSelector.setDisable(true);
-        slotIconView.setVisible(true);
-        slotIconView2.setVisible(true);
-        updatePrizeHighlights();
-        List<Integer> systemSelections = gameController.randomSelectNumbersForSystem(cheatMode);
-        if (cheatMode) {
-            statusLabel.setText("Cheat mode active! Jackpot incoming...");
-            statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_SURPRISE);
-        } else {
-            statusLabel.setText("System is selecting numbers...");
-            statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
-        }
-
-        Collections.sort(systemSelections);
-
-        for (int num : systemSelections) {
-            PauseTransition pause = new PauseTransition(Duration.seconds(0.2 * systemSelections.indexOf(num)));
-            pause.setOnFinished(e -> {
-                numberButtons[num - 1].systemSelect();
-                if (gameController.getSelectedNumbers().contains(num)) {
-                    currentMatchCount++;
-                    updatePrizeHighlights();
-                }
-            });
-            pause.play();
-        }
-
-        PauseTransition processPause = getProcessingTransition(systemSelections);
-        processPause.play();
-    }
-
-    private PauseTransition getProcessingTransition(List<Integer> systemSelections) {
-        PauseTransition processPause = new PauseTransition(Duration.seconds(0.2 * systemSelections.size() + 0.3));
-        processPause.setOnFinished(ev -> {
-            slotIconView.setVisible(false);
-            slotIconView2.setVisible(false);
-            int matchedCount = currentMatchCount;
-            int roundPrize = PrizeTable.getPrizeForHits(gameController.getMaxSelections(), matchedCount);
-            totalWinnings += roundPrize;
-            if(PrizeTable.isValidPrize(gameController.getMaxSelections(),currentMatchCount)) {
-                audioController.playSound(AudioController.JACKPOT_SOUND);
-                statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_SURPRISE);
-            }else {
-                audioController.playSound(AudioController.FINISH_SOUND);
-                statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
-            }
-            statusLabel.setText("Round over! You matched " + currentMatchCount + " number(s).");
-
-            List<Integer> matchedNumbers = new ArrayList<>();
-            for (int num : systemSelections) {
-                if (gameController.getSelectedNumbers().contains(num)) {
-                    matchedNumbers.add(num);
-                }
-            }
-
-            totalMatchCount += currentMatchCount;
-            currentMatchCount = 0;
-            PauseTransition showResultDelay = new PauseTransition(Duration.seconds(1));
-            showResultDelay.setOnFinished(e -> {
-                Platform.runLater( () -> {
-                    InfoWindow.showResult(currentRounds, totalRounds, matchedCount, roundPrize, matchedNumbers,this::startNextRound, this::onAllRoundsCompleted);
-                });
-            });
-            showResultDelay.play();
-        });
-        return processPause;
-    }
-
-    private void resetGameState() {
-        gameHistories.add(new GameHistory(totalRounds, totalMatchCount,totalWinnings));
-        currentRounds = 0;
-        totalWinnings = 0;
-        totalMatchCount = 0;
-        cheatMode = false;
-        controlArea.setDisable(false);
-        drawingsSelector.setDisable(false);
-        setAllNumberSelectable(true);
-        modeSelector.setDisable(false);
-        resetForNewRound();
-        resetPrizeHighlights();
-    }
-
-    private void onAllRoundsCompleted() {
-        resetGameState();
-        statusLabel.setText("All rounds complete! Total prize: $" + totalWinnings);
-        statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_SURPRISE);
-    }
 
 
     private HBox createInfoArea() {
@@ -339,11 +192,7 @@ public class GameStage {
         drawingsSelector.setStyle(ButtonStyles.MENU_BUTTON_MODE);
         drawingsSelector.setPrefWidth(170);
         drawingsSelector.setAlignment(Pos.CENTER);
-        drawingsSelector.setOnMouseClicked(e -> {
-            if (drawingsPopOver != null && drawingsPopOver.isShowing()) {
-                drawingsPopOver.hide();
-            }
-        });
+        drawingsSelector.setOnMouseClicked(e -> animationController.hideDrawingsNotification());
         MenuItem oneDrawings = MenuFactory.createMenuItem("1 round", () -> handleDrawingsChange(GameDrawings.ONE_DRAWING));
         MenuItem twoDrawings = MenuFactory.createMenuItem("2 round", () -> handleDrawingsChange(GameDrawings.TWO_DRAWING));
         MenuItem threeDrawings = MenuFactory.createMenuItem("3 round", () -> handleDrawingsChange(GameDrawings.THREE_DRAWING));
@@ -358,7 +207,7 @@ public class GameStage {
         drawingsSelector.setText("Draws : " + gameDrawings.getMaxDrawings());
         statusLabel.setText("Drawings changed to " + gameDrawings.getDisplayName() + "(s).");
         statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
-        if (allDisabled && gameController.getGameMode() != null) {
+        if (gameController.getGameMode() != null) {
             enableAllButtons();
         }
     }
@@ -369,11 +218,7 @@ public class GameStage {
         modeSelector.setStyle(ButtonStyles.MENU_BUTTON_MODE);
         modeSelector.setPrefWidth(170);
         modeSelector.setAlignment(Pos.CENTER);
-        modeSelector.setOnMouseClicked(e -> {
-            if (modePopOver != null && modePopOver.isShowing()) {
-                modePopOver.hide();
-            }
-        });
+        modeSelector.setOnMouseClicked(e -> animationController.hideNotification());
         MenuItem oneSpot = MenuFactory.createMenuItem("1 Spot", () -> handleModeChange(GameMode.ONE_SPOT));
         MenuItem fourSpot = MenuFactory.createMenuItem("4 Spot", () -> handleModeChange(GameMode.FOUR_SPOT));
         MenuItem eightSpot = MenuFactory.createMenuItem("8 Spot", () -> handleModeChange(GameMode.EIGHT_SPOT));
@@ -388,33 +233,19 @@ public class GameStage {
         modeSelector.setText("Spots : " + gameMode.getMaxSpots());
         statusLabel.setText("Mode changed to " + gameMode.getDisplayName() + "(s).");
         statusLabel.setStyle(ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
-        updatePrizeMatchPanel(gameMode);
+        animationController.updatePrizeMatchPanel(gameMode);
         InfoWindow.showOdds(gameController.getGameMode(), true);
         drawingsSelector.setDisable(false);
-        PauseTransition delay = new PauseTransition(Duration.seconds(0.6));
-        delay.setOnFinished(e -> showDrawingsSelectorPopOver());
         if(gameController.getGameDrawings() == null){
-            delay.play();
+            animationController.showNotification(drawingsSelector);
         }else{
-            resetNumberButtons();
-            resetPrizeHighlights();
+            animationController.resetNumberButtons();
+            animationController.resetPrizeHighlights();
             playButton.setDisable(true);
         }
     }
 
-    private void updatePrizeMatchPanel(GameMode mode) {
-        prizeMatchPanel.getChildren().clear();
-        prizeItemBoxes.clear();
-        Map<Integer, Integer> prizes = PrizeTable.getPrizeTableForSpots(mode.getMaxSpots());
-        prizes.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
-            PrizeItemBox item = new PrizeItemBox(entry.getKey(), entry.getValue());
-            prizeItemBoxes.add(item);
-        });
 
-        List<PrizeItemBox> temp = new ArrayList<>(prizeItemBoxes);
-        Collections.reverse(temp);
-        prizeMatchPanel.getChildren().setAll(temp);
-    }
 
     private HBox createGameArea() {
         HBox gameArea = new HBox();
@@ -462,8 +293,8 @@ public class GameStage {
             return;
         }
         audioController.playSound(AudioController.CLICK_SOUND);
-        resetForNewRound();
-        resetPrizeHighlights();
+        animationController.resetForNewRound();
+        animationController.resetPrizeHighlights();
         if (btn.isSelected()) {
             handleDeselection(btn);
         } else {
@@ -504,8 +335,8 @@ public class GameStage {
         if (playButton.isDisabled()) {
             return;
         }
-        resetNumberButtons();
-        resetPrizeHighlights();
+        animationController.resetNumberButtons();
+        animationController.resetPrizeHighlights();
         audioController.playSound(AudioController.CLEAR_SOUND);
         gameController.getSelectedNumbers().clear();
         statusLabel.setText("Selections cleared.");
@@ -515,9 +346,9 @@ public class GameStage {
 
     private MenuBar createMenu() {
         MenuBar menuBar = new MenuBar();
-        Menu help = MenuFactory.createHelpMenu(InfoWindow::showRules,
-                () -> InfoWindow.showOdds(gameController.getGameMode() == null ? GameMode.TEN_SPOT : gameController.getGameMode()),
-                stage::close);
+        Menu help = MenuFactory.createHelpMenu(InfoWindow::showRules
+                , () -> InfoWindow.showOdds(gameController.getGameMode() == null ? GameMode.TEN_SPOT : gameController.getGameMode())
+                , stage::close);
         Menu settings = MenuFactory.createSettingsMenu(this::handleResetPreferences, this::toggleTheme);
         menuBar.getMenus().addAll(settings, help);
         return menuBar;
@@ -552,8 +383,8 @@ public class GameStage {
     }
 
     private void handleRandomSelection() {
-        resetNumberButtons();
-        resetPrizeHighlights();
+        animationController.resetNumberButtons();
+        animationController.resetPrizeHighlights();
         audioController.playSound(AudioController.CLICK_SOUND);
         gameController.randomSelectNumbersForUser();
         for (int num : gameController.getSelectedNumbers()) {
@@ -563,61 +394,19 @@ public class GameStage {
         statusLabel.setText("Randomly selected " + gameController.getSelectedCount() + " number(s).");
     }
 
-    private void resetNumberButtons() {
-        for (NumberButton btn : numberButtons) {
-            btn.reset();
-        }
-    }
 
-    private void resetForNewRound() {
-        for (NumberButton btn : numberButtons) {
-            if (btn.isSelected()) {
-                continue;
-            } else if (btn.bothSelected()) {
-                btn.setState(NumberButton.ButtonState.USER_SELECTED);
-            } else {
-                btn.reset();
-            }
-        }
-    }
+
+
 
     private void disableAllButtons() {
         numberGrid.setDisable(true);
         controlArea.setDisable(true);
         drawingsSelector.setDisable(true);
-        allDisabled = true;
     }
 
     private void enableAllButtons() {
         numberGrid.setDisable(false);
         controlArea.setDisable(false);
-        allDisabled = false;
-    }
-
-    private void setAllNumberSelectable(boolean selectable) {
-        for (NumberButton btn : numberButtons) {
-            btn.setSelectable(selectable);
-        }
-    }
-
-    public void updatePrizeHighlights() {
-        for (PrizeItemBox item : prizeItemBoxes) {
-            if (item.getRequiredMatches() < currentMatchCount) {
-                item.reset();
-                continue;
-            }
-            if (item.getRequiredMatches() == currentMatchCount) {
-                item.highlightPrize();
-                audioController.playSound(AudioController.MATCH_SOUND);
-                break;
-            }
-        }
-    }
-
-    public void resetPrizeHighlights() {
-        for (PrizeItemBox item : prizeItemBoxes) {
-            item.reset();
-        }
     }
 
 
