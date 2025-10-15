@@ -23,6 +23,7 @@ public enum GameMode {
         return displayName;
     }
 
+
     public int getMaxSpots() {
         return maxSpots;
     }

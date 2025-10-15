@@ -66,6 +66,10 @@ public class GameController {
         return gameDrawings;
     }
 
+    public boolean isReadyToPlay() {
+        return gameMode != null && gameDrawings != null && selectedNumbers.size() == getMaxSelections();
+    }
+
     public List<Integer> getSelectedNumbers() {
         return selectedNumbers;
     }

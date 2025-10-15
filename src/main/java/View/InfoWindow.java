@@ -29,15 +29,6 @@ public class InfoWindow {
     public static final String PREFS_KEY_SHOW_ODDS = "show_odds";
     private static final PauseTransition pause = new PauseTransition(javafx.util.Duration.seconds(0.4));
     private static Stage window;
-    public static final String GAME_RULES = "Pick a mode first by using the button at left top corner!\n\n" +
-            "Each game round, you can choose up to 1, 4, 8, 10 numbers to play.\n\n" +
-            "You can also hit 'Random' to let the system pick numbers for you.\n\n" +
-            "After selecting your numbers, click 'Play' to start.\n\n" +
-            "Once the game starts, 20 numbers will be drawn randomly.\n\n" +
-            "Your winnings depend on how many of your chosen numbers match the drawn numbers.\n\n" +
-            "For each spots mode winning details, please hit 'Prize Table' in help menu to check.\n\n" +
-            "Try 'Control + Shift + C' for a surprise!\n ";
-
 
     public static void createInfoWindow(int width, int height, String title, String content, String themeColor, String prefsKey, boolean showCheckBox, boolean wait, HBox buttonArea) {
         window = new Stage();
@@ -118,7 +109,15 @@ public class InfoWindow {
         if (autoShow && !shouldShowAgain(PREFS_KEY_SHOW_RULES)) {
             return;
         }
-        createInfoWindow(500, 580, "Game Rules", InfoWindow.GAME_RULES, ThemeStyles.GOLD_DARK, PREFS_KEY_SHOW_RULES, autoShow, false, null);
+        String GAME_RULES = "Pick a mode first by using the button at left top corner!\n\n" +
+                "Each game round, you can choose up to 1, 4, 8, 10 numbers to play.\n\n" +
+                "You can also hit 'Random' to let the system pick numbers for you.\n\n" +
+                "After selecting your numbers, click 'Play' to start.\n\n" +
+                "Once the game starts, 20 numbers will be drawn randomly.\n\n" +
+                "Your winnings depend on how many of your chosen numbers match the drawn numbers.\n\n" +
+                "For each spots mode winning details, please hit 'Prize Table' in help menu to check.\n\n" +
+                "Try 'Control + Shift + C' for a surprise!\n ";
+        createInfoWindow(500, 580, "Game Rules", GAME_RULES, ThemeStyles.GOLD_DARK, PREFS_KEY_SHOW_RULES, autoShow, false, null);
     }
 
     public static void showOdds(GameMode mode, boolean autoShow) {
@@ -166,14 +165,20 @@ public class InfoWindow {
         sb.append(matchedNumbers.toString().replaceAll("[\\[\\],]", "")).append("\n\n");
         sb.append("You matched ").append(matchedCount).append(" number").append(matchedCount == 1 ? "" : "s").append(".\n");
         if (prize > 0) {
-            sb.append("Congratulations! You won ").append(formatPrize(prize)).append("!\n");
+            sb.append("Congratulations!\n");
+            sb.append("You won ").append(formatPrize(prize)).append("!\n");
         } else {
-            sb.append("No prize this round. Better luck next time!\n");
+            sb.append("No prize this round.\n");
+            sb.append("Better luck next time!\n");
         }
 
         HBox buttonArea = createButtonArea(currentRound, totalRounds, onContinue, onFinish);
         createInfoWindow(400, 400, "Round Result", sb.toString(), ThemeStyles.GOLD_DARK, null, false, true,buttonArea);
 
+    }
+
+    public static void showHistory(String historyContent) {
+        createInfoWindow(500, 600, "Game History", historyContent, ThemeStyles.GOLD_DARK, null, false, true, null);
     }
 
     private static HBox createButtonArea(int currentRound, int totalRounds, Runnable onContinue, Runnable onFinish) {
