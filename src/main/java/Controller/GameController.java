@@ -1,5 +1,6 @@
 package Controller;
 
+import Model.GameDrawings;
 import Model.GameMode;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ public class GameController {
 
 
     private GameMode gameMode;
+    private GameDrawings gameDrawings;
     private List<Integer> selectedNumbers;
     private Random rand;
     private static final int RANDOM_SYSTEM_SELECTION_COUNT = 20;
@@ -24,8 +26,16 @@ public class GameController {
         this.selectedNumbers.clear(); // Clear selections when mode changes
     }
 
+    public void setGameDrawings(GameDrawings drawings) {
+        this.gameDrawings = drawings;
+    }
+
     public int getMaxSelections() {
         return gameMode.getMaxSpots();
+    }
+
+    public int getMaxDrawings() {
+        return gameDrawings.getMaxDrawings();
     }
 
     public boolean selectNumber(int number) {
@@ -50,6 +60,10 @@ public class GameController {
 
     public GameMode getGameMode() {
         return gameMode;
+    }
+
+    public GameDrawings getGameDrawings() {
+        return gameDrawings;
     }
 
     public List<Integer> getSelectedNumbers() {

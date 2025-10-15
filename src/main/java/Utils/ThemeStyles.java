@@ -154,7 +154,7 @@ public class ThemeStyles {
     public static final String INFO_LABEL_BALANCE =
             "-fx-background-color: linear-gradient(to right, #F39C12 0%, #F1C40F 50%, #F39C12 100%); " +
                     "-fx-text-fill: #2C3E50; " +
-                    "-fx-font-size: 18px; " +
+                    "-fx-font-size: 14px; " +
                     "-fx-font-weight: bold; " +
                     "-fx-font-family: 'Courier New', monospace; " +
                     "-fx-padding: 12 25 12 25; " +

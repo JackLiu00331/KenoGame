@@ -60,17 +60,13 @@ public class PrizeTable {
         return false;
     }
 
-    public static void printPrizeTable(int spots) {
-        System.out.println("Prize Table:");
-        Map<Integer, Integer> table = getPrizeTableForSpots(spots);
-
-        List<Integer> matches = new ArrayList<>(table.keySet());
-        Collections.sort(matches);
-
-        for (int match : matches) {
-            System.out.printf("Hits: %d -> Multiplier: %d%n", match, table.get(match));
+    public static Integer getPrizeForHits(int spots, int hits) {
+        if (PRIZE_TABLE.containsKey(spots)) {
+            if(PRIZE_TABLE.get(spots).containsKey(hits)) {
+                return PRIZE_TABLE.get(spots).get(hits);
+            }
         }
-        System.out.println();
+        return 0;
     }
 
     public static double getOdds(int spots) {

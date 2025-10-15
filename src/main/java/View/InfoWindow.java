@@ -1,7 +1,10 @@
 package View;
 
+import Component.ButtonBuilder;
+import Component.ControlButton;
 import Model.GameMode;
 import Model.PrizeTable;
+import Utils.ButtonStyles;
 import Utils.ThemeStyles;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -9,11 +12,13 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
@@ -23,7 +28,7 @@ public class InfoWindow {
     public static final String PREFS_KEY_SHOW_RULES = "show_rules";
     public static final String PREFS_KEY_SHOW_ODDS = "show_odds";
     private static final PauseTransition pause = new PauseTransition(javafx.util.Duration.seconds(0.4));
-
+    private static Stage window;
     public static final String GAME_RULES = "Pick a mode first by using the button at left top corner!\n\n" +
             "Each game round, you can choose up to 1, 4, 8, 10 numbers to play.\n\n" +
             "You can also hit 'Random' to let the system pick numbers for you.\n\n" +
@@ -34,8 +39,8 @@ public class InfoWindow {
             "Try 'Control + Shift + C' for a surprise!\n ";
 
 
-    public static void createInfoWindow(int width, int height, String title, String content, String themeColor, String prefsKey, boolean showCheckBox) {
-        Stage window = new Stage();
+    public static void createInfoWindow(int width, int height, String title, String content, String themeColor, String prefsKey, boolean showCheckBox, boolean wait, HBox buttonArea) {
+        window = new Stage();
         window.setTitle(title);
         window.setWidth(width);
         window.setHeight(height);
@@ -59,13 +64,21 @@ public class InfoWindow {
         } else {
             mainLayout.getChildren().addAll(titleLabel, contentBox);
         }
+
+        if(buttonArea != null) {
+            mainLayout.getChildren().add(buttonArea);
+        }
         mainLayout.setAlignment(Pos.TOP_CENTER);
         mainLayout.setSpacing(10);
 
         Scene scene = new Scene(mainLayout);
         window.setScene(scene);
         window.setAlwaysOnTop(true);
-        window.show();
+        if (wait) {
+            window.showAndWait();
+        } else {
+            window.show();
+        }
     }
 
     private static CheckBox createCheckBox(String prefsKey, Stage window) {
@@ -105,7 +118,7 @@ public class InfoWindow {
         if (autoShow && !shouldShowAgain(PREFS_KEY_SHOW_RULES)) {
             return;
         }
-        createInfoWindow(500, 580, "Game Rules", InfoWindow.GAME_RULES, ThemeStyles.GOLD_DARK, PREFS_KEY_SHOW_RULES, autoShow);
+        createInfoWindow(500, 580, "Game Rules", InfoWindow.GAME_RULES, ThemeStyles.GOLD_DARK, PREFS_KEY_SHOW_RULES, autoShow, false, null);
     }
 
     public static void showOdds(GameMode mode, boolean autoShow) {
@@ -143,9 +156,60 @@ public class InfoWindow {
             sb.append(String.format("Overall Odds: 1 in %.2f\n", PrizeTable.getOdds(spotsPlayed)));
         }
 
-        createInfoWindow(400, 550, "Prize Table", sb.toString(), ThemeStyles.GOLD_LIGHT, PREFS_KEY_SHOW_ODDS, autoShow);
+        createInfoWindow(400, 550, "Prize Table", sb.toString(), ThemeStyles.GOLD_LIGHT, PREFS_KEY_SHOW_ODDS, autoShow, false, null);
     }
 
+    public static void showResult(int currentRound, int totalRounds, int matchedCount, int prize, List<Integer> matchedNumbers, Runnable onContinue, Runnable onFinish) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Round ").append(currentRound).append(" of ").append(totalRounds).append("\n\n");
+        sb.append("Drawn Numbers:\n");
+        sb.append(matchedNumbers.toString().replaceAll("[\\[\\],]", "")).append("\n\n");
+        sb.append("You matched ").append(matchedCount).append(" number").append(matchedCount == 1 ? "" : "s").append(".\n");
+        if (prize > 0) {
+            sb.append("Congratulations! You won ").append(formatPrize(prize)).append("!\n");
+        } else {
+            sb.append("No prize this round. Better luck next time!\n");
+        }
+
+        HBox buttonArea = createButtonArea(currentRound, totalRounds, onContinue, onFinish);
+        createInfoWindow(400, 400, "Round Result", sb.toString(), ThemeStyles.GOLD_DARK, null, false, true,buttonArea);
+
+    }
+
+    private static HBox createButtonArea(int currentRound, int totalRounds, Runnable onContinue, Runnable onFinish) {
+        HBox buttonArea = new HBox(20);
+        buttonArea.setAlignment(Pos.CENTER);
+
+        if (currentRound < totalRounds) {
+
+            ControlButton continueBtn = new ButtonBuilder("Continue")
+                    .style(ButtonStyles.ButtonType.SUCCESS)
+                    .asMenu()
+                    .onClick(e -> {
+                        window.close();
+                        if (onContinue != null) {
+                            onContinue.run();
+                        }
+                    }).build();
+
+            buttonArea.getChildren().addAll(continueBtn);
+
+        } else {
+
+            ControlButton closeBtn = new ButtonBuilder("Close")
+                    .style(ButtonStyles.ButtonType.DANGER)
+                    .asMenu()
+                    .onClick(e -> {
+                        window.close();
+                        if (onFinish != null) {
+                            onFinish.run();
+                        }
+                    }).build();
+            buttonArea.getChildren().add(closeBtn);
+        }
+
+        return buttonArea;
+    }
     public static void showOdds(GameMode mode) {
         showOdds(mode, false);
     }

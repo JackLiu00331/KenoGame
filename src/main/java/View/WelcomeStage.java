@@ -65,8 +65,19 @@ public class WelcomeStage {
                 .children(gameIconView, gameTitle, gameIconView2)
                 .build();
 
-        Button startGameButton = new ButtonBuilder("Start").asMenu().size(150, -1).onClick(e -> handleStart()).style(ButtonStyles.ButtonType.SUCCESS).build();
-        Button exitGameButton = new ButtonBuilder("Exit").asMenu().size(150, -1).onClick(e -> stage.close()).style(ButtonStyles.ButtonType.DANGER).build();
+        Button startGameButton = new ButtonBuilder("Start")
+                .asMenu()
+                .size(150, -1)
+                .onClick(e -> handleStart())
+                .style(ButtonStyles.ButtonType.SUCCESS)
+                .build();
+
+        Button exitGameButton = new ButtonBuilder("Exit")
+                .asMenu()
+                .size(150, -1)
+                .onClick(e -> stage.close())
+                .style(ButtonStyles.ButtonType.DANGER)
+                .build();
 
         VBox scene = LayoutBuilder.vbox()
                 .alignment(Pos.CENTER)
