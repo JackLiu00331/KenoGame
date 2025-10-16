@@ -4,6 +4,16 @@
 
 A modern, interactive Keno game built with Java and JavaFX, featuring smooth animations, sound effects, and an intuitive user interface. Players can select between 1, 4, 8, or 10 spots, place bets, and watch as random numbers are drawn with engaging visual feedback. The game includes prize tables based on traditional Keno odds and a comprehensive betting system.
 
+## Wireframes
+<img width="2909" height="1585" alt="image" src="https://github.com/user-attachments/assets/813dd8af-c4f8-450a-b790-976d136e7cc0" />
+
+## Application frames
+<img width="600" height="600" alt="image" src="https://github.com/user-attachments/assets/071e6573-8354-4d42-bb94-df6ba3be47fc" />
+<img width="1000" height="810" alt="image" src="https://github.com/user-attachments/assets/557cca92-5024-41fc-ae00-e95f809c8374" />
+<img width="1000" height="810" alt="image" src="https://github.com/user-attachments/assets/9dc64d94-acaf-4ab7-9155-46e07c20e875" />
+
+
+
 ## 🎮 Features
 
 - **Multiple Game Modes**: Support for 1, 4, 8, and 10-spot gameplay
