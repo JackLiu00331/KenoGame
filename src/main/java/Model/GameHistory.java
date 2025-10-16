@@ -1,5 +1,7 @@
 package Model;
 
+import java.util.List;
+
 public class GameHistory {
     private int totalRounds;
     private int totalMatchedCount;

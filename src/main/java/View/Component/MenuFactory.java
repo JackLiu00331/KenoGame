@@ -1,11 +1,7 @@
-package Component;
+package View.Component;
 
-import Model.GameMode;
-import View.InfoWindow;
-import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.stage.Stage;
 
 public class MenuFactory {
 

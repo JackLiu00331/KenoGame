@@ -1,4 +1,4 @@
-package Controller;
+package Service;
 
 import javafx.scene.media.AudioClip;
 
@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AudioController {
+public class AudioService {
     public static final String CLICK_SOUND = "/sound/button.wav";
     public static final String CLEAR_SOUND = "/sound/clear.wav";
     public static final String MATCH_SOUND = "/sound/match.wav";
@@ -16,7 +16,7 @@ public class AudioController {
     public static final String JACKPOT_SOUND = "/sound/jackpot.wav";
     private Map<String, AudioClip> soundMap;
 
-    public AudioController(){
+    public AudioService(){
         soundMap = new HashMap<>();
         loadAllSounds();
     }

@@ -1,7 +1,7 @@
 package View;
 
-import Component.ButtonBuilder;
-import Component.ControlButton;
+import View.Component.ButtonBuilder;
+import View.Component.ControlButton;
 import Model.GameMode;
 import Model.PrizeTable;
 import Utils.ButtonStyles;
@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.util.Comparator;
 import java.util.List;
@@ -66,6 +67,7 @@ public class InfoWindow {
         window.setScene(scene);
         window.setAlwaysOnTop(true);
         if (wait) {
+            window.initStyle(StageStyle.UNDECORATED);
             window.showAndWait();
         } else {
             window.show();
@@ -178,7 +180,7 @@ public class InfoWindow {
     }
 
     public static void showHistory(String historyContent) {
-        createInfoWindow(500, 600, "Game History", historyContent, ThemeStyles.GOLD_DARK, null, false, true, null);
+        createInfoWindow(500, 600, "Game History", historyContent, ThemeStyles.GOLD_DARK, null, false, false, null);
     }
 
     private static HBox createButtonArea(int currentRound, int totalRounds, Runnable onContinue, Runnable onFinish) {

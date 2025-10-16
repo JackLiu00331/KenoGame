@@ -1,8 +1,9 @@
 package View;
 
-import Component.ButtonBuilder;
-import Component.LayoutBuilder;
-import Component.MenuFactory;
+import Controller.GameController;
+import View.Component.ButtonBuilder;
+import View.Component.LayoutBuilder;
+import View.Component.MenuFactory;
 import Model.GameMode;
 import Utils.ButtonStyles;
 import Utils.ThemeStyles;
@@ -18,12 +19,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
-public class WelcomeStage {
+public class WelcomeView {
     private Stage stage;
     private MenuBar menuBar;
-    private GameStage gameStage;
+    private GameController gameController;
+    private GameView gameView;
 
-    public WelcomeStage() {
+    public WelcomeView() {
         initializeStage();
     }
 
@@ -90,9 +92,10 @@ public class WelcomeStage {
     }
 
     private void handleStart() {
-        gameStage = new GameStage(this);
-        gameStage.show();
-        stage.close();
+        gameView = new GameView();
+        gameController = new GameController(gameView, this);
+        gameView.show();
+        stage.hide();
     }
 
     private MenuBar createMenuBar() {
@@ -107,8 +110,5 @@ public class WelcomeStage {
         stage.show();
     }
 
-    public void hide() {
-        stage.hide();
-    }
 
 }

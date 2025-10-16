@@ -1,4 +1,4 @@
-package Component;
+package View.Component;
 
 public interface StatefulButton {
     void updateState();

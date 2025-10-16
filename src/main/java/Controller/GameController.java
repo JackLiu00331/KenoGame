@@ -1,123 +1,263 @@
 package Controller;
 
 import Model.GameDrawings;
-import Model.GameHistory;
 import Model.GameMode;
+import Model.GameState;
+import Service.AnimationService;
+import Service.AudioService;
+import Service.GameService;
+import Utils.MenuCallback;
+import Utils.ThemeStyles;
+import View.Component.MenuFactory;
+import View.Component.NumberButton;
+import View.GameView;
+import View.InfoWindow;
+import View.WelcomeView;
+import javafx.scene.control.Alert;
+import javafx.scene.control.MenuItem;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+public class GameController implements MenuCallback {
 
-public class GameController {
+    private GameView gameView;
+    private GameService gameService;
+    private GameState gameState;
+    private AudioService audioService;
+    private AnimationService animationService;
+    private WelcomeView welcomeView;
 
+    public GameController(GameView gameView, WelcomeView welcomeView) {
+        this.gameView = gameView;
+        this.welcomeView = welcomeView;
 
-    private GameMode gameMode;
-    private GameDrawings gameDrawings;
-    private List<Integer> selectedNumbers;
-    private List<GameHistory> gameHistories;
-    private Random rand;
-    private static final int RANDOM_SYSTEM_SELECTION_COUNT = 20;
+        this.gameState = new GameState();
+        this.gameService = new GameService(gameState);
+        this.audioService = new AudioService();
+        this.animationService = new AnimationService(audioService, gameService, gameView, gameState);
 
-    public GameController() {
-        this.gameMode = null;
-        this.selectedNumbers = new ArrayList<>();
-        this.gameHistories = new ArrayList<>();
+        setUpEventHandlers();
+        setUpKeyHandler();
+        setUpMenus();
+        gameView.setupMenus(this);
+
+        initializeView();
     }
 
-    public void setGameMode(GameMode mode) {
-        this.gameMode = mode;
-        this.selectedNumbers.clear(); // Clear selections when mode changes
-    }
 
-    public void setGameDrawings(GameDrawings drawings) {
-        this.gameDrawings = drawings;
-    }
 
-    public int getMaxSelections() {
-        return gameMode.getMaxSpots();
-    }
-
-    public int getMaxDrawings() {
-        return gameDrawings.getMaxDrawings();
-    }
-
-    public boolean selectNumber(int number) {
-        if (number > 0 && number < 81 && selectedNumbers.size() < getMaxSelections() && !selectedNumbers.contains(number)) {
-            selectedNumbers.add(number);
-            return true;
+    private void initializeView(){
+        if (gameState.getGameMode() == null && gameState.getGameDrawings() == null) {
+            gameView.disableAllButtons();
         }
-        return false;
+        animationService.showGameRules();
+        animationService.showModeNotification();
     }
 
-    public boolean deselectNumber(int number) {
-        return selectedNumbers.remove(Integer.valueOf(number));
+    private void setUpEventHandlers() {
+        for (NumberButton btn : gameView.getNumberButtons()) {
+            btn.setOnAction(e -> handleNumberButtonClick(btn));
+        }
+
+        gameView.getPlayButton().setOnAction(e -> handleStartGame());
+        gameView.getRandomButton().setOnAction(e -> handleRandomSelection());
+        gameView.getClearButton().setOnAction(e -> handleClearSelection());
+        gameView.getHistoryButton().setOnAction(e -> handleShowHistory());
+        gameView.getRestartButton().setOnAction(e -> handleRestart());
+
+        gameView.getStage().setOnCloseRequest( e -> {
+            e.consume();
+            handleBack();
+        });
     }
 
-    public int getSelectedCount() {
-        return selectedNumbers.size();
-    }
-
-    public boolean canSelectMore() {
-        return selectedNumbers.size() < getMaxSelections();
-    }
-
-    public GameMode getGameMode() {
-        return gameMode;
-    }
-
-    public GameDrawings getGameDrawings() {
-        return gameDrawings;
-    }
-
-    public boolean isReadyToPlay() {
-        return gameMode != null && gameDrawings != null && selectedNumbers.size() == getMaxSelections();
-    }
-
-    public List<Integer> getSelectedNumbers() {
-        return selectedNumbers;
-    }
-
-    public void randomSelectNumbersForUser() {
-        selectedNumbers.clear();
-        rand = new Random();
-        while (selectedNumbers.size() < getMaxSelections()) {
-            int num = rand.nextInt(80) + 1; // Random number between 1 and 80
-            if (!selectedNumbers.contains(num)) {
-                selectedNumbers.add(num);
+    private void setUpKeyHandler() {
+        gameView.getScene().setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case C:
+                    if (event.isControlDown() && event.isShiftDown()) {
+                        gameState.setCheatMode(true);
+                    }
+                    break;
+                case ENTER:
+                    if (gameState.getGameMode() != null && !gameView.getPlayButton().isDisable()) {
+                        handleStartGame();
+                    }
+                    break;
+                case Q:
+                    if (gameState.getGameMode() != null && !gameView.getPlayButton().isDisable()) {
+                        handleClearSelection();
+                    }
+                    break;
+                case R:
+                    if (gameState.getGameMode() != null) {
+                        handleRandomSelection();
+                    }
+                    break;
+                default:
+                    break;
             }
+        });
+    }
+
+    private void setUpMenus() {
+        MenuItem oneSpot = MenuFactory.createMenuItem("1 Spot", () -> handleModeChange(GameMode.ONE_SPOT));
+        MenuItem fourSpot = MenuFactory.createMenuItem("4 Spot", () -> handleModeChange(GameMode.FOUR_SPOT));
+        MenuItem eightSpot = MenuFactory.createMenuItem("8 Spot", () -> handleModeChange(GameMode.EIGHT_SPOT));
+        MenuItem tenSpot = MenuFactory.createMenuItem("10 Spot", () -> handleModeChange(GameMode.TEN_SPOT));
+        gameView.getModeSelector().getItems().addAll(oneSpot, fourSpot, eightSpot, tenSpot);
+        gameView.getModeSelector().setOnMouseClicked(e -> animationService.hideModeNotification());
+
+
+        MenuItem oneDrawings = MenuFactory.createMenuItem("1 round", () -> handleDrawingsChange(GameDrawings.ONE_DRAWING));
+        MenuItem twoDrawings = MenuFactory.createMenuItem("2 round", () -> handleDrawingsChange(GameDrawings.TWO_DRAWING));
+        MenuItem threeDrawings = MenuFactory.createMenuItem("3 round", () -> handleDrawingsChange(GameDrawings.THREE_DRAWING));
+        MenuItem fourDrawings = MenuFactory.createMenuItem("4 round", () -> handleDrawingsChange(GameDrawings.FOUR_DRAWING));
+        gameView.getDrawingsSelector().getItems().addAll(oneDrawings, twoDrawings, threeDrawings, fourDrawings);
+        gameView.getDrawingsSelector().setOnMouseClicked(e -> animationService.hideDrawingsNotification());
+
+    }
+
+    private void handleStartGame() {
+        if(!gameService.isReadyToPlay()){
+            gameView.updateStatusLabel("Please select " + gameService.getMaxSelections() + " numbers to play.", ThemeStyles.INFO_LABEL_STATUS_DANGER);
+            return;
+        }
+        animationService.startNextRound();
+    }
+
+
+    private void handleDrawingsChange(GameDrawings gameDrawings) {
+        audioService.playSound(AudioService.MODE_SOUND);
+        gameState.setGameDrawings(gameDrawings);
+        gameView.updateDrawingsSelectorText("Draws : " + gameDrawings.getMaxDrawings());
+        gameView.updateStatusLabel("Drawings changed to " + gameDrawings.getDisplayName() + "(s).", ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
+        if (gameState.getGameMode() != null) {
+            gameView.enableAllButtons();
         }
     }
 
-    public List<Integer> randomSelectNumbersForSystem(boolean cheatMode) {
-        rand = new Random();
-        List<Integer> systemSelectedNumbers = cheatMode ? new ArrayList<>(getSelectedNumbers()) : new ArrayList<>();
-        while (systemSelectedNumbers.size() < RANDOM_SYSTEM_SELECTION_COUNT) { // System always selects 20 numbers
-            int num = rand.nextInt(80) + 1; // Random number between 1 and 80
-            if (!systemSelectedNumbers.contains(num)) {
-                systemSelectedNumbers.add(num);
+    private void handleModeChange(GameMode gameMode) {
+        audioService.playSound(AudioService.MODE_SOUND);
+        gameState.setGameMode(gameMode);
+        gameView.updateModeSelectorText("Spots : " + gameMode.getMaxSpots());
+        gameView.updateStatusLabel("Mode changed to " + gameMode.getDisplayName() + "(s).", ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
+
+        animationService.updatePrizeMatchPanel(gameMode);
+        InfoWindow.showOdds(gameMode, true);
+
+        gameView.getDrawingsSelector().setDisable(false);
+        if(gameState.getGameDrawings() == null){
+            animationService.showDrawingsNotification();
+        }else{
+            animationService.resetNumberButtons();
+            animationService.resetPrizeHighlights();
+            gameView.getPlayButton().setDisable(true);
+        }
+    }
+
+    private void handleNumberButtonClick(NumberButton btn) {
+
+        if (!btn.isSelectable()) {
+            return;
+        }
+        audioService.playSound(AudioService.CLICK_SOUND);
+        animationService.resetForNewRound();
+        animationService.resetPrizeHighlights();
+        if (btn.isSelected()) {
+            handleNumberDeselection(btn);
+        } else {
+            handleNumberSelection(btn);
+        }
+    }
+
+    private void handleNumberDeselection(NumberButton btn) {
+        if (!gameService.deselectNumber(btn.getNumber())) {
+            return;
+        }
+        btn.deselect();
+        if (gameState.getSelectedCount() == 0) {
+            gameView.updateStatusLabel( "Please select your lucky numbers.", ThemeStyles.INFO_LABEL_STATUS_NEUTRAL);
+            gameView.getPlayButton().setDisable(true);
+        }
+    }
+
+    private void handleNumberSelection(NumberButton btn) {
+        if (!gameService.selectNumber(btn.getNumber())) {
+            if (gameState.getSelectedCount() >= gameService.getMaxSelections()) {
+                gameView.updateStatusLabel("You can only select up to " + gameService.getMaxSelections() + " numbers.", ThemeStyles.INFO_LABEL_STATUS_DANGER);
             }
+            return;
         }
-        return systemSelectedNumbers;
+
+        btn.select();
+        gameView.updateStatusLabel( "You have selected " + gameState.getSelectedCount() + " number(s).", ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
+        gameView.getPlayButton().setDisable(false);
     }
 
-    public void addGameHistory(GameHistory history) {
-        gameHistories.add(history);
-    }
-
-
-    public List<GameHistory> getGameHistories() {
-        return gameHistories;
-    }
-
-    public String generateHistoryText() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%-10s %-15s %-15s %-15s\n", "ID","Total Rounds", "Total Matches", "Total Winnings"));
-        sb.append("-----------------------------------------------------\n");
-        for (int i = 0; i < gameHistories.size(); i++) {
-            GameHistory history = gameHistories.get(i);
-            sb.append(String.format("%-25d %-25d %-30d $%-14d\n", i + 1, history.getTotalRounds(), history.getTotalMatchedCount(), history.getTotalPrize()));
+    private void handleClearSelection() {
+        if (gameView.getPlayButton().isDisabled()) {
+            return;
         }
-        return sb.toString();
+        animationService.resetNumberButtons();
+        animationService.resetPrizeHighlights();
+        audioService.playSound(AudioService.CLEAR_SOUND);
+        gameService.clearSelections();
+        gameView.updateStatusLabel("Selections cleared.", ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
+        gameView.getPlayButton().setDisable(true);
     }
 
+
+    private void handleBack() {
+        gameView.hide();
+        if (welcomeView != null) {
+            welcomeView.show();
+        }
+    }
+
+    private void handleRandomSelection() {
+        animationService.resetNumberButtons();
+        animationService.resetPrizeHighlights();
+        audioService.playSound(AudioService.CLICK_SOUND);
+        gameService.randomSelectNumbersForUser();
+        for (int num : gameState.getSelectedNumbers()) {
+            gameView.getNumberButtons()[num - 1].select();
+        }
+        gameView.getPlayButton().setDisable(false);
+        gameView.updateStatusLabel("Randomly selected " + gameState.getSelectedCount() + " number(s).", ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
+    }
+
+    private void handleShowHistory() {
+        String histories = gameState.getGameHistories().isEmpty()
+                ? "No game history available."
+                : gameService.generateHistoryText();
+        InfoWindow.showHistory(histories);
+    }
+
+    private void handleRestart() {
+        animationService.resetGame();
+    }
+
+    @Override
+    public void onShowRules() {
+        InfoWindow.showRules();
+    }
+
+    @Override
+    public void onShowOdds() {
+        GameMode currentMode = gameState.getGameMode();
+        InfoWindow.showOdds(currentMode != null ? currentMode : GameMode.ONE_SPOT);
+    }
+
+    @Override
+    public void onExitGame() {
+        gameView.getStage().close();
+    }
+
+    @Override
+    public void onResetPreferences() {
+        InfoWindow.resetAllPreferences();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Settings Reset");
+        alert.setContentText("All preferences have been reset to default.");
+        alert.showAndWait();
+    }
 }
