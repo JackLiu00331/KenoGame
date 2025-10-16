@@ -24,6 +24,7 @@ public class WelcomeView {
     private MenuBar menuBar;
     private GameController gameController;
     private GameView gameView;
+    BorderPane root;
 
     public WelcomeView() {
         initializeStage();
@@ -33,7 +34,7 @@ public class WelcomeView {
         stage = new Stage();
         stage.setTitle("Keno Game");
         menuBar = createMenuBar();
-        BorderPane root = createBorderPane();
+        root = createBorderPane();
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setHeight(600);
@@ -100,7 +101,7 @@ public class WelcomeView {
 
     private MenuBar createMenuBar() {
         MenuBar menuBar = new MenuBar();
-        Menu gameMenu = MenuFactory.createHelpMenu(InfoWindow::showRules, () -> InfoWindow.showOdds(GameMode.TEN_SPOT), stage::close);
+        Menu gameMenu = MenuFactory.createHelpMenu(() ->InfoWindow.showRules(root), () -> InfoWindow.showOdds(GameMode.TEN_SPOT, root), stage::close);
         menuBar.getMenus().add(gameMenu);
         return menuBar;
     }

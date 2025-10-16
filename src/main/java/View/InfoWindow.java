@@ -12,11 +12,14 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.scene.effect.GaussianBlur;
 
 import java.util.Comparator;
 import java.util.List;
@@ -28,10 +31,22 @@ public class InfoWindow {
     private static final Preferences prefs = Preferences.userNodeForPackage(InfoWindow.class);
     public static final String PREFS_KEY_SHOW_RULES = "show_rules";
     public static final String PREFS_KEY_SHOW_ODDS = "show_odds";
-    private static final PauseTransition pause = new PauseTransition(javafx.util.Duration.seconds(0.4));
     private static Stage window;
 
-    public static void createInfoWindow(int width, int height, String title, String content, String themeColor, String prefsKey, boolean showCheckBox, boolean wait, HBox buttonArea) {
+    /**
+     * Create and display an information window.
+     * @param width - window width
+     * @param height - window height
+     * @param title - window title
+     * @param content - main content text
+     * @param themeColor - title color
+     * @param prefsKey - preference key for "Don't show again" checkbox
+     * @param showCheckBox - whether to show the checkbox
+     * @param wait - whether to block interaction with other windows
+     * @param buttonArea - optional button area at the bottom
+     * @param root - the root pane to apply blur effect
+     */
+    public static void createInfoWindow(int width, int height, String title, String content, String themeColor, String prefsKey, boolean showCheckBox, boolean wait, HBox buttonArea, Pane root) {
         window = new Stage();
         window.setTitle(title);
         window.setWidth(width);
@@ -50,6 +65,7 @@ public class InfoWindow {
 
         VBox contentBox = createContentBox(content);
 
+        // Add "Don't show again" checkbox if needed
         CheckBox dontShowAgainCheckBox = showCheckBox ? createCheckBox(prefsKey, window) : null;
         if (dontShowAgainCheckBox != null) {
             mainLayout.getChildren().addAll(titleLabel, contentBox, dontShowAgainCheckBox);
@@ -57,30 +73,51 @@ public class InfoWindow {
             mainLayout.getChildren().addAll(titleLabel, contentBox);
         }
 
+        // Add button area if provided
         if(buttonArea != null) {
             mainLayout.getChildren().add(buttonArea);
         }
         mainLayout.setAlignment(Pos.TOP_CENTER);
         mainLayout.setSpacing(10);
 
+        // Center the window on the screen
         Scene scene = new Scene(mainLayout);
         window.setScene(scene);
         window.setAlwaysOnTop(true);
+
+        // Apply blur effect to the root pane
+        GaussianBlur blur = new GaussianBlur(20);
+        ColorAdjust darker = new ColorAdjust(0, -1.0, -0.7, -0.2);
+        darker.setInput(blur);
+        root.setEffect(blur);
+        window.setOnHidden( e -> root.setEffect(null));
+
+        // Show the window, blocking if specified
         if (wait) {
             window.initStyle(StageStyle.UNDECORATED);
             window.showAndWait();
         } else {
             window.show();
         }
+
     }
 
+    /**
+     * Create a checkbox for "Don't show this again" functionality.
+     * @param prefsKey - preference key to store the user's choice
+     * @param window - the current window to close when checkbox is toggled
+     * @return
+     */
     private static CheckBox createCheckBox(String prefsKey, Stage window) {
         CheckBox checkBox = new CheckBox("Don't show this again");
         checkBox.setStyle("-fx-text-fill: #E8E8E8; -fx-font-size: 13px;");
         checkBox.setSelected(!shouldShowAgain(prefsKey));
+
+        // Update preference when checkbox is toggled
         checkBox.setOnAction(e -> {
             prefs.putBoolean(prefsKey, !checkBox.isSelected());
             System.out.println("Preference " + prefsKey + " set to " + !checkBox.isSelected());
+            PauseTransition pause = new PauseTransition(javafx.util.Duration.seconds(0.4));
             pause.play();
             pause.setOnFinished(event -> Platform.runLater(window::close));
         });
@@ -88,6 +125,11 @@ public class InfoWindow {
     }
 
 
+    /**
+     * Create the content box with styled label.
+     * @param content - main content text
+     * @return VBox containing the content label
+     */
     private static VBox createContentBox(String content) {
         VBox contentBox = new VBox();
         contentBox.setStyle("-fx-background: transparent; -fx-border-color: transparent;");
@@ -107,7 +149,12 @@ public class InfoWindow {
         return contentBox;
     }
 
-    public static void showRules(boolean autoShow) {
+    /**
+     * Show game rules window if user hasn't opted out.
+     * @param autoShow - whether to check user preference
+     * @param root - the root pane to apply blur effect
+     */
+    public static void showRules(boolean autoShow, Pane root) {
         if (autoShow && !shouldShowAgain(PREFS_KEY_SHOW_RULES)) {
             return;
         }
@@ -119,14 +166,23 @@ public class InfoWindow {
                 "Your winnings depend on how many of your chosen numbers match the drawn numbers.\n\n" +
                 "For each spots mode winning details, please hit 'Prize Table' in help menu to check.\n\n" +
                 "Try 'Control + Shift + C' for a surprise!\n ";
-        createInfoWindow(500, 580, "Game Rules", GAME_RULES, ThemeStyles.GOLD_DARK, PREFS_KEY_SHOW_RULES, autoShow, false, null);
+        createInfoWindow(500, 580, "Game Rules", GAME_RULES, ThemeStyles.GOLD_DARK, PREFS_KEY_SHOW_RULES, autoShow, false, null, root);
+
     }
 
-    public static void showOdds(GameMode mode, boolean autoShow) {
+    /**
+     *  Show odds and prize table for the selected game mode.
+     * @param mode - current game mode
+     * @param autoShow - whether to check user preference
+     * @param root - the root pane to apply blur effect
+     */
+    public static void showOdds(GameMode mode, boolean autoShow, Pane root) {
+        // Default to 10-spot mode if mode is null
         if (mode == null) {
             mode = GameMode.TEN_SPOT;
         }
 
+        // Check user preference, if autoShow is true and user opted out, skip showing
         if (autoShow && !shouldShowAgain(PREFS_KEY_SHOW_ODDS)) {
             return;
         }
@@ -157,10 +213,21 @@ public class InfoWindow {
             sb.append(String.format("Overall Odds: 1 in %.2f\n", PrizeTable.getOdds(spotsPlayed)));
         }
 
-        createInfoWindow(400, 550, "Prize Table", sb.toString(), ThemeStyles.GOLD_LIGHT, PREFS_KEY_SHOW_ODDS, autoShow, false, null);
+        createInfoWindow(400, 550, "Prize Table", sb.toString(), ThemeStyles.GOLD_LIGHT, PREFS_KEY_SHOW_ODDS, autoShow, false, null, root);
     }
 
-    public static void showResult(int currentRound, int totalRounds, int matchedCount, int prize, List<Integer> matchedNumbers, Runnable onContinue, Runnable onFinish) {
+    /**
+     * Show the result of the current round.
+     * @param currentRound - current round number
+     * @param totalRounds - total rounds in the game
+     * @param matchedCount - count of matched numbers
+     * @param prize - prize won this round
+     * @param matchedNumbers - list of matched numbers
+     * @param onContinue - action to perform on continue
+     * @param onFinish - action to perform on finish
+     * @param root - the root pane to apply blur effect
+     */
+    public static void showResult(int currentRound, int totalRounds, int matchedCount, int prize, List<Integer> matchedNumbers, Runnable onContinue, Runnable onFinish, VBox root) {
         StringBuilder sb = new StringBuilder();
         sb.append("Round ").append(currentRound).append(" of ").append(totalRounds).append("\n\n");
         sb.append("Drawn Numbers:\n");
@@ -173,20 +240,34 @@ public class InfoWindow {
             sb.append("No prize this round.\n");
             sb.append("Better luck next time!\n");
         }
-
+        // Create button area based on game progress
         HBox buttonArea = createButtonArea(currentRound, totalRounds, onContinue, onFinish);
-        createInfoWindow(400, 400, "Round Result", sb.toString(), ThemeStyles.GOLD_DARK, null, false, true,buttonArea);
-
+        createInfoWindow(400, 400, "Round Result", sb.toString(), ThemeStyles.GOLD_DARK, null, false, true,buttonArea, root);
     }
 
-    public static void showHistory(String historyContent) {
-        createInfoWindow(500, 600, "Game History", historyContent, ThemeStyles.GOLD_DARK, null, false, false, null);
+
+    /**
+     * Show the game history window with past game summaries.
+     * @param historyContent - formatted history text
+     * @param root - the root pane to apply blur effect
+     */
+    public static void showHistory(String historyContent, VBox root) {
+        createInfoWindow(500, 600, "Game History", historyContent, ThemeStyles.GOLD_DARK, null, false, false, null, root);
     }
 
+    /**
+     * Create the button area for the result window.
+     * @param currentRound - current round number
+     * @param totalRounds - total rounds in the game
+     * @param onContinue - action to perform on continue
+     * @param onFinish - action to perform on finish
+     * @return HBox containing the buttons
+     */
     private static HBox createButtonArea(int currentRound, int totalRounds, Runnable onContinue, Runnable onFinish) {
         HBox buttonArea = new HBox(20);
         buttonArea.setAlignment(Pos.CENTER);
 
+        // If there are more rounds, show "Continue" button; otherwise show "Close" button
         if (currentRound < totalRounds) {
 
             ControlButton continueBtn = new ButtonBuilder("Continue")
@@ -217,14 +298,29 @@ public class InfoWindow {
 
         return buttonArea;
     }
-    public static void showOdds(GameMode mode) {
-        showOdds(mode, false);
+
+    /**
+     * Overloaded method to show odds without checking user preference.
+     * @param mode - current game mode
+     * @param root - the root pane to apply blur effect
+     */
+    public static void showOdds(GameMode mode, Pane root) {
+        showOdds(mode, false, root);
     }
 
-    public static void showRules() {
-        showRules(false);
+    /**
+     * Overloaded method to show rules without checking user preference.
+     * @param root - the root pane to apply blur effect
+     */
+    public static void showRules(Pane root) {
+        showRules(false, root);
     }
 
+    /**
+     * Format prize amount with appropriate styling.
+     * @param prize - prize amount in dollars
+     * @return
+     */
     private static String formatPrize(int prize) {
         if (prize >= 100000) {
             return String.format("$%,d*", prize);
@@ -234,10 +330,18 @@ public class InfoWindow {
         return "$" + prize;
     }
 
+    /**
+     * Check if the dialog should be shown again based on user preference.
+     * @param key - preference key
+     * @return
+     */
     private static boolean shouldShowAgain(String key) {
         return prefs.getBoolean(key, true);
     }
 
+    /**
+     * Reset all preferences to show dialogs again.
+     */
     public static void resetAllPreferences() {
         prefs.putBoolean(PREFS_KEY_SHOW_RULES, true);
         prefs.putBoolean(PREFS_KEY_SHOW_ODDS, true);

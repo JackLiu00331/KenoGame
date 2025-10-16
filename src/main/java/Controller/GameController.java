@@ -142,7 +142,7 @@ public class GameController implements MenuCallback {
         gameView.updateStatusLabel("Mode changed to " + gameMode.getDisplayName() + "(s).", ThemeStyles.INFO_LABEL_STATUS_POSITIVE);
 
         animationService.updatePrizeMatchPanel(gameMode);
-        InfoWindow.showOdds(gameMode, true);
+        InfoWindow.showOdds(gameMode, true, gameView.getRoot());
 
         gameView.getDrawingsSelector().setDisable(false);
         if(gameState.getGameDrawings() == null){
@@ -229,7 +229,7 @@ public class GameController implements MenuCallback {
         String histories = gameState.getGameHistories().isEmpty()
                 ? "No game history available."
                 : gameService.generateHistoryText();
-        InfoWindow.showHistory(histories);
+        InfoWindow.showHistory(histories, gameView.getRoot());
     }
 
     private void handleRestart() {
@@ -238,13 +238,13 @@ public class GameController implements MenuCallback {
 
     @Override
     public void onShowRules() {
-        InfoWindow.showRules();
+        InfoWindow.showRules(gameView.getRoot());
     }
 
     @Override
     public void onShowOdds() {
         GameMode currentMode = gameState.getGameMode();
-        InfoWindow.showOdds(currentMode != null ? currentMode : GameMode.ONE_SPOT);
+        InfoWindow.showOdds(currentMode != null ? currentMode : GameMode.ONE_SPOT, gameView.getRoot());
     }
 
     @Override

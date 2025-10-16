@@ -1,8 +1,6 @@
 package Service;
 
-import Model.GameDrawings;
 import Model.GameHistory;
-import Model.GameMode;
 import Model.GameState;
 
 import java.util.ArrayList;
@@ -50,7 +48,7 @@ public class GameService {
     }
 
 
-    public List<Integer> randomSelectNumbersForUser() {
+    public void randomSelectNumbersForUser() {
         List<Integer> selected = new ArrayList<>();
         while (selected.size() < getMaxSelections()) {
             int num = rand.nextInt(80) + 1; // Random number between 1 and 80
@@ -59,7 +57,6 @@ public class GameService {
             }
         }
         gameState.setSelectedNumbers(selected);
-        return selected;
     }
 
     public List<Integer> randomSelectNumbersForSystem() {
@@ -73,15 +70,6 @@ public class GameService {
         return systemSelectedNumbers;
     }
 
-    public int calculateMatches(List<Integer> systemNumbers) {
-        int matches = 0;
-        for (Integer num : systemNumbers) {
-            if (gameState.getSelectedNumbers().contains(num)) {
-                matches++;
-            }
-        }
-        return matches;
-    }
 
     public List<Integer> getMatchedNumbers(List<Integer> systemNumbers) {
         List<Integer> matchedNumbers = new ArrayList<>();

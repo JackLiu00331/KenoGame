@@ -47,9 +47,4 @@ public abstract class StyledButton extends Button implements StatefulButton {
             }
         });
     }
-
-    protected void resetStyles() {
-        initializeStyles();
-        applyCurrentStyles();
-    }
 }

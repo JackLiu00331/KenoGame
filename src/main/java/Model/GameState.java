@@ -14,7 +14,7 @@ public class GameState {
 
     // Tracking fields
     private Integer currentMatchCount = 0;
-    private Integer currentRound = 0;
+    private Integer currentRound;
     private Integer totalMatchCount = 0;
     private Integer totalWinnings = 0;
 

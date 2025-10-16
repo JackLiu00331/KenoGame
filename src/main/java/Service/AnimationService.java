@@ -13,6 +13,8 @@ import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -45,7 +47,7 @@ public class AnimationService {
     public void showGameRules() {
         PauseTransition slowPause = new PauseTransition(Duration.seconds(0.4));
         slowPause.setOnFinished(e -> {
-            InfoWindow.showRules(true);
+            InfoWindow.showRules(true, gameView.getRoot());
         });
         slowPause.play();
     }
@@ -100,7 +102,6 @@ public class AnimationService {
 
     public void startNextRound() {
         gameState.incrementRound();
-        gameState.resetTotalWinnings();
         gameState.resetTotalMatchCount();
 
         audioService.playSound(AudioService.START_SOUND);
@@ -166,7 +167,7 @@ public class AnimationService {
             PauseTransition showResultDelay = new PauseTransition(Duration.seconds(1));
             showResultDelay.setOnFinished(e -> {
                 Platform.runLater( () -> {
-                    InfoWindow.showResult(gameState.getCurrentRound(), gameService.getMaxDrawings(), matchedCount, roundPrize, matchedNumbers,this::startNextRound, this::onAllRoundsCompleted);
+                    InfoWindow.showResult(gameState.getCurrentRound(), gameService.getMaxDrawings(), matchedCount, roundPrize, matchedNumbers,this::startNextRound, this::onAllRoundsCompleted, gameView.getRoot());
                 });
             });
             showResultDelay.play();
@@ -195,6 +196,8 @@ public class AnimationService {
         gameState.setGameMode(null);
         gameService.resetForNewGame();
 
+        gameView.getModeSelector().setText("Select Mode");
+        gameView.getDrawingsSelector().setText("Select Drawings");
         if (gameState.getGameMode() == null && gameState.getGameDrawings() == null) {
             gameView.disableAllButtons();
         }
