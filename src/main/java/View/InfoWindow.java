@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
+/**
+ * InfoWindow class to create and manage information windows in the application.
+ */
 public class InfoWindow {
 
     private static final Preferences prefs = Preferences.userNodeForPackage(InfoWindow.class);

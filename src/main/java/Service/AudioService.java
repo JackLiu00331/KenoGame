@@ -6,7 +6,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * AudioService class to manage loading and playing sound effects.
+ */
 public class AudioService {
+    // Sound file paths
     public static final String CLICK_SOUND = "/sound/button.wav";
     public static final String CLEAR_SOUND = "/sound/clear.wav";
     public static final String MATCH_SOUND = "/sound/match.wav";
@@ -14,13 +18,16 @@ public class AudioService {
     public static final String START_SOUND = "/sound/start.wav";
     public static final String FINISH_SOUND = "/sound/finish.wav";
     public static final String JACKPOT_SOUND = "/sound/jackpot.wav";
+    // Map to hold loaded sounds
     private Map<String, AudioClip> soundMap;
 
+    // Constructor to initialize and load sounds
     public AudioService(){
         soundMap = new HashMap<>();
         loadAllSounds();
     }
 
+    // Method to load all sound files
     private void loadAllSounds() {
         // Load sound files
         loadSound(CLICK_SOUND);
@@ -32,8 +39,11 @@ public class AudioService {
         loadSound(JACKPOT_SOUND);
     }
 
+    /**
+     * Loads a sound file and stores it in the sound map.
+     * @param clickSoundFile The path to the sound file to load.
+     */
     private void loadSound(String clickSoundFile) {
-        // Implementation to load sound file
         System.out.println("Loading sound: " + clickSoundFile);
         try {
             URL soundURL = getClass().getResource(clickSoundFile);
@@ -48,6 +58,10 @@ public class AudioService {
         }
     }
 
+    /**
+     * Plays the specified sound effect.
+     * @param soundFile - The path to the sound file to play.
+     */
     public void playSound(String soundFile) {
         AudioClip clip = soundMap.get(soundFile);
         if (clip != null) {

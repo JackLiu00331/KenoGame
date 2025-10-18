@@ -1,8 +1,10 @@
 package Utils;
 
+/**
+ * Utility class for button styles in JavaFX
+ */
 public class ButtonStyles {
     // ============ General Button Styles (MenuButton, ControlButton, etc.) ============
-
     /**
      * Enumeration of button types
      */
@@ -15,13 +17,13 @@ public class ButtonStyles {
 
     /**
      * Get the style for general buttons
-     *
      * @param type  Button type
      * @param state Button state (normal, hover, pressed)
+     * @return CSS style string
      */
     public static String getGeneralButtonStyle(ButtonType type, String state) {
         if (type == null) {
-            type = ButtonType.PRIMARY; // 默认值
+            type = ButtonType.PRIMARY;
         }
         String baseColor, hoverColor, pressedColor;
 
@@ -62,7 +64,7 @@ public class ButtonStyles {
                 scale = "-fx-scale-x: 0.98; -fx-scale-y: 0.98;";
                 shadow = "dropshadow(gaussian, rgba(0,0,0,0.15), 5, 0, 0, 1)";
                 break;
-            default: // normal
+            default:
                 color = baseColor;
         }
 
@@ -81,9 +83,15 @@ public class ButtonStyles {
         );
     }
 
+    /**
+     * Get the style for control buttons (smaller size)
+     * @param type Button type
+     * @param state Button state (normal, hover, pressed)
+     * @return CSS style string
+     */
     public static String getControlButtonStyle(ButtonType type, String state) {
         if (type == null) {
-            type = ButtonType.PRIMARY; // 默认值
+            type = ButtonType.PRIMARY;
         }
         String baseColor, hoverColor, pressedColor, fontSize = "16px";
 
@@ -125,7 +133,7 @@ public class ButtonStyles {
                 scale = "-fx-scale-x: 0.98; -fx-scale-y: 0.98;";
                 shadow = "dropshadow(gaussian, rgba(0,0,0,0.15), 5, 0, 0, 1)";
                 break;
-            default: // normal
+            default:
                 color = baseColor;
         }
 
@@ -145,7 +153,6 @@ public class ButtonStyles {
     }
 
     // ============ Number Button Styles (Specific to NumberButton) ============
-
     /**
      * Enumeration of number button states
      */
@@ -156,8 +163,12 @@ public class ButtonStyles {
         BOTH_SELECTED       // Both selected (winning)
     }
 
+
     /**
-     * Get the style for number buttons
+     * Get the style for number buttons based on their state and hover status
+     * @param state - Number button state
+     * @param isHover - Whether the button is being hovered over
+     * @return - CSS style string
      */
     public static String getNumberButtonStyle(NumberButtonState state, boolean isHover) {
         switch (state) {
@@ -166,7 +177,7 @@ public class ButtonStyles {
             case USER_SELECTED:
                 return getUserSelectedStyle(isHover);
             case SYSTEM_SELECTED:
-                return getSystemSelectedStyle(isHover);
+                return getSystemSelectedStyle();
             case BOTH_SELECTED:
                 return getBothSelectedStyle(isHover);
             default:
@@ -174,7 +185,11 @@ public class ButtonStyles {
         }
     }
 
-    // Unselected state (black)
+    /**
+     * Unselected state (dark purple)
+     * @param isHover - hover state
+     * @return CSS style string
+     */
     private static String getUnselectedStyle(boolean isHover) {
         String scale = isHover ? "-fx-scale-x: 1.05; -fx-scale-y: 1.05;" : "";
         String bg = isHover ?
@@ -198,7 +213,11 @@ public class ButtonStyles {
         );
     }
 
-    // User selected state (pink)
+    /**
+     * User selected state (pink)
+     * @param isHover - hover state
+     * @return CSS style string
+     */
     private static String getUserSelectedStyle(boolean isHover) {
         String scale = isHover ? "-fx-scale-x: 1.05; -fx-scale-y: 1.05;" : "";
         String bg = isHover ?
@@ -223,8 +242,11 @@ public class ButtonStyles {
         );
     }
 
-    // System selected state (black with golden border)
-    private static String getSystemSelectedStyle(boolean isHover) {
+    /**
+     * System selected state (golden)
+     * @return CSS style string
+     */
+    private static String getSystemSelectedStyle() {
         return
                 "-fx-background-color: radial-gradient(center 50% 50%, radius 50%, #3D1F2E 0%, #2A1520 100%); " +
                         "-fx-border-color: #FFD700; " +
@@ -239,7 +261,11 @@ public class ButtonStyles {
                         "innershadow(gaussian, rgba(255, 215, 0, 0.2), 3, 0, 0, 0);";
     }
 
-    // Both selected (winning) state (orange with golden border)
+    /**
+     * Both selected state (winning - bright gold)
+     * @param isHover - hover state
+     * @return CSS style string
+     */
     private static String getBothSelectedStyle(boolean isHover) {
         String scale = isHover ? "-fx-scale-x: 1.05; -fx-scale-y: 1.05;" : "";
         String bg = isHover ?
@@ -264,6 +290,7 @@ public class ButtonStyles {
         );
     }
 
+    // ============ Menu Button Specific Style ============
     public static final String MENU_BUTTON_MODE =
             "-fx-background-color: linear-gradient(to right, #F39C12 0%, #F1C40F 50%, #F39C12 100%); " +
                     "-fx-text-fill: #2C3E50; " +

@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * GameState class manages the state of the game including configurations,
+ * selected numbers, game history, and tracking of matches and winnings.
+ */
 public class GameState {
     // Game configuration fields
     private GameMode gameMode;
@@ -18,6 +22,7 @@ public class GameState {
     private Integer totalMatchCount = 0;
     private Integer totalWinnings = 0;
 
+    // Constructor
     public GameState(){
         this.selectedNumbers = new ArrayList<>();
         this.gameHistories = new ArrayList<>();
@@ -25,6 +30,7 @@ public class GameState {
         this.currentRound = 0;
     }
 
+    // Getters and Setters
     public GameMode getGameMode(){
         return gameMode;
     }

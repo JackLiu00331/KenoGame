@@ -1,5 +1,9 @@
 package Model;
 
+/**
+ * GameHistory class to store the history of the game including total rounds played,
+ * total matched count, and total prize won.
+ */
 public class GameHistory {
     private int totalRounds;
     private int totalMatchedCount;

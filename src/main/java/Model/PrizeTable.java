@@ -2,10 +2,17 @@ package Model;
 
 import java.util.*;
 
+/**
+ * PrizeTable class manages the prize structure and odds for different spot games.
+ */
 public class PrizeTable {
+    // Prize table mapping spots to hits and their corresponding prizes
     private static final Map<Integer, Map<Integer, Integer>> PRIZE_TABLE = new HashMap<>();
+    // Odds table mapping spots to their odds
     private static final Map<Integer, Double> ODDS_TABLE = new HashMap<>();
 
+    // A static block to initialize the prize and odds tables
+    // to avoid redundancy and improve performance
     static {
         Map<Integer, Integer> spot1 = new HashMap<>();
         spot1.put(1, 2);
@@ -41,18 +48,21 @@ public class PrizeTable {
         ODDS_TABLE.put(10, 9.05);
     }
 
-    public static int getPrizeMultiplier(int spots, int hits) {
-        if (PRIZE_TABLE.containsKey(spots)) {
-            Map<Integer, Integer> spotMap = PRIZE_TABLE.get(spots);
-            return spotMap.getOrDefault(hits, 0);
-        }
-        return 0;
-    }
-
+    /**
+     * Get the prize table for a specific number of spots.
+     * @param spots - Number of spots
+     * @return Map of hits to prizes
+     */
     public static Map<Integer, Integer> getPrizeTableForSpots(int spots) {
         return PRIZE_TABLE.getOrDefault(spots, new HashMap<>());
     }
 
+    /**
+     * Check if a given spots and hits combination is valid.
+     * @param spots - number of spots
+     * @param hits - number of hits
+     * @return true if valid, false otherwise
+     */
     public static boolean isValidPrize(int spots, int hits) {
         if (PRIZE_TABLE.containsKey(spots)) {
             return PRIZE_TABLE.get(spots).containsKey(hits);
@@ -60,6 +70,12 @@ public class PrizeTable {
         return false;
     }
 
+    /**
+     * Get the prize for a specific spots and hits combination.
+     * @param spots - number of spots
+     * @param hits - number of hits
+     * @return prize amount, or 0 if invalid combination
+     */
     public static Integer getPrizeForHits(int spots, int hits) {
         if (PRIZE_TABLE.containsKey(spots)) {
             if(PRIZE_TABLE.get(spots).containsKey(hits)) {
@@ -69,6 +85,11 @@ public class PrizeTable {
         return 0;
     }
 
+    /**
+     * Get the odds for a specific number of spots.
+     * @param spots - Number of spots
+     * @return odds value
+     */
     public static double getOdds(int spots) {
         if (ODDS_TABLE.containsKey(spots)) {
             return ODDS_TABLE.get(spots);

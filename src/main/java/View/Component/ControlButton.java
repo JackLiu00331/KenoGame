@@ -5,19 +5,16 @@ import Utils.ButtonStyles;
 public class ControlButton extends StyledButton {
 
     private final ButtonStyles.ButtonType styleType;
-    private final String actionType;
     private String buttonType; // Default to MENU, can be CONTROL
 
     public ControlButton(String text, ButtonStyles.ButtonType styleType, String buttonType) {
         super(text);
         this.styleType = styleType;
-        this.actionType = text;
         if (buttonType == null || (!buttonType.equals("MENU") && !buttonType.equals("CONTROL"))) {
-            this.buttonType = "MENU"; // Default to MENU if invalid type is provided
+            this.buttonType = "MENU";
         } else {
             this.buttonType = buttonType;
         }
-        //applyCurrentStyles();
         initializeStyles();
         applyCurrentStyles();
     }
@@ -51,15 +48,4 @@ public class ControlButton extends StyledButton {
         return buttonType;
     }
 
-    public String getActionType() {
-        return actionType;
-    }
-
-    public String getButtonType() {
-        return buttonType;
-    }
-
-    public ButtonStyles.ButtonType getStyleType() {
-        return styleType;
-    }
 }
