@@ -14,7 +14,9 @@ A modern, interactive Keno game built with Java and JavaFX, featuring smooth ani
 
 ## Project Demo
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/J3K13KbvdWc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Keno Game Demo](https://img.youtube.com/vi/J3K13KbvdWc/0.jpg)](https://youtu.be/J3K13KbvdWc)
+
+*Click the image above to watch the demo video*
 
 ## 🎮 Features
 
