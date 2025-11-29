@@ -12,7 +12,9 @@ A modern, interactive Keno game built with Java and JavaFX, featuring smooth ani
 <img width="1000" height="810" alt="image" src="https://github.com/user-attachments/assets/557cca92-5024-41fc-ae00-e95f809c8374" />
 <img width="1000" height="810" alt="image" src="https://github.com/user-attachments/assets/9dc64d94-acaf-4ab7-9155-46e07c20e875" />
 
+## Project Demo
 
+<iframe width="560" height="315" src="https://youtu.be/J3K13KbvdWc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## 🎮 Features
 
